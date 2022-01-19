@@ -1,0 +1,12 @@
+version: '3'
+services:
+  static-rdf-server:
+    build: .
+    image: eu.gcr.io/digdir-fdk-infra/static-rdf-server:test
+    ports:
+      - 8080:8080
+    environment:
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./tests/files/:/srv/www/static-rdf-server/

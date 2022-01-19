@@ -1,0 +1,101 @@
+openapi: 3.0.3
+info:
+  title: Static RDF server
+  description: |
+    The static RDF serve will serve ontologies to the client based on content-negotiation.
+
+    Supports following content-types
+    - text/html,
+    - all standard RDF-serializations
+  version: "1.0"
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+servers:
+  - url: https://staging.fellesdatakatalog.digdir.no
+    description: Test server
+paths:
+  /:
+    get:
+      description: Get html document describing different types available
+      responses:
+        200:
+          description: An html document listing types of ontologies
+          content:
+            text/html:
+              schema:
+                type: string
+  /{type}:
+    get:
+      description: Get html document describing content of given type
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: the type of ontology
+          schema:
+            type: string
+          example: examples
+      responses:
+        200:
+          description: An html document listing ontologies of given type
+          content:
+            text/html:
+              schema:
+                type: string
+  /{type}/{ontology}:
+    get:
+      description: Get representation of the given ontology
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: the type of ontology
+          schema:
+            type: string
+          example: examples
+        - name: ontology
+          in: path
+          required: true
+          description: the name of the ontology
+          schema:
+            type: string
+          example: hello-world
+      responses:
+        200:
+          description: An ontology document of given type
+          content:
+            text/html:
+              schema:
+                type: string
+            text/turtle:
+              schema:
+                type: string
+  /{ontology_type}/upload-files:
+    post:
+      security:
+        - ApiKeyAuth: []
+      description: Upload files to server
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                ontology-rdf-file:
+                  type: string
+                  format: binary
+                  description: a file containing the rdf representation of the ontology
+                ontology-html-file:
+                  type: string
+                  format: binary
+                  description: a file containing the html representation of the ontology
+      responses:
+        201:
+          description: Created
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
