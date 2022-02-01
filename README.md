@@ -49,10 +49,27 @@ docker-compose up --build
 
 ## Usage
 
+To get content from the server:
+
 ```shell
 % curl -H "Accept: text/turtle" http://localhost:8080/examples/hello-world  # will return a hello-world RDF document
 % curl -H  http://localhost:8080/examples/hello-world  # will return a hello-world HTML document
 ```
+
+### To post content to the server
+
+Say you want to post two files to your ontology of ontology-type "vocabulary".
+
+```shell
+% curl -i \
+ -H "X-API-KEY: <a valid api-key>" \
+ -H "Content-Type: multipart/form-data" \
+ -F "ontology-rdf-file=@path/to/your/files/ontology.ttl;type=text/turtle" \
+ -F "ontology-html-file=@path/to/your/files/ontology.html;type=text/html" \
+ -X POST http://localhost:8000/vocabulary/upload-files
+```
+
+If all goes well you should receive a 201 Created status-code and a relative URL to your content in the Location-header.
 
 ## Testing
 
