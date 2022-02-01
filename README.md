@@ -38,7 +38,7 @@ To build and run the api in a Docker container:
 
 ```shell
 % docker build -t static-rdf-server:latest .
-% docker run --env-file .env -p 8080:8080 -d eu.gcr.io/digdir-fdk-infra/static-rdf-server:latest
+% docker run --env-file .env -p 8080:8080 -d static-rdf-server:latest
 ```
 
 The easier way would be with docker-compose:
