@@ -1,0 +1,120 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build, test, publish and deploy to production environment on merge to main branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup gcloud CLI for image-store
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
+
+      - name: Configure docker to use the gcloud command-line tool as a credential helper
+        run: gcloud auth configure-docker eu.gcr.io
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: .cache
+          key: ${{ runner.os }}-nox-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nox-
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: eu.gcr.io/digdir-fdk-infra/static-rdf-server
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ github.sha }},priority=1000
+            type=ref,event=branch
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: x64
+
+      - name: Install dependencies
+        run: |
+          pipx install poetry==1.1.11
+          pipx install nox==2021.10.1
+          pipx inject nox nox-poetry
+
+      - name: Run tests with nox
+        run: nox
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=.cache
+          cache-to: type=local,dest=.cache
+          build-args: |
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply Helm template
+        run: |
+          helm repo add fdk https://informasjonsforvaltning.github.io/helm-chart/
+          helm fetch --untar --untardir ./helm fdk/static-rdf-server
+          helm template --set DOCKER_IMAGE_NAME="eu.gcr.io/digdir-fdk-infra/static-rdf-server:${{ steps.meta.outputs.version }}" \
+          -f ./helm/static-rdf-server/values/prod.yaml \
+          ./helm/static-rdf-server/ > ./kubectlapply.yaml
+          chmod o+w ./kubectlapply.yaml
+          cat kubectlapply.yaml
+
+      - name: Setup gcloud CLI for deploy
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.DIGDIR_FDK_PROD_AUTODEPLOY }}
+
+      - name: Deploy to GCP & check status
+        run: |
+          gcloud container clusters get-credentials digdir-fdk-prod --region europe-north1-a --project digdir-fdk-prod
+          kubectl apply -f ./kubectlapply.yaml --force
+          if ! kubectl --namespace=prod rollout status deployment static-rdf-server; then
+            kubectl --namespace=prod rollout undo deployment static-rdf-server
+            kubectl --namespace=prod rollout status deployment static-rdf-server
+            exit 1
+          fi
+
+      - name: Notify slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: "Application: static-rdf-server | Environment: prod"
+          fields: commit,author,workflow
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+      - name: Trigger deploy to demo
+        uses: peter-evans/repository-dispatch@main
+        with:
+          token: ${{ secrets.DISPATCH_TOKEN }}
+          event-type: deploy-demo
+          client-payload: '{"sha": "${{ github.sha }}"}'
