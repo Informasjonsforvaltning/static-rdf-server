@@ -1,0 +1,47 @@
+name: Deploy to staging
+
+on:
+  repository_dispatch:
+    types: [deploy-demo]
+
+jobs:
+  build-and-deploy:
+    name: Deploy latest production image to demo environment on repository dispatch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Apply Helm template
+        run: |
+          helm repo add fdk https://informasjonsforvaltning.github.io/helm-chart/
+          helm fetch --untar --untardir ./helm fdk/static-rdf-server
+          helm template --set DOCKER_IMAGE_NAME="eu.gcr.io/digdir-fdk-infra/static-rdf-server:${{ steps.meta.outputs.version }}" \
+          -f ./helm/static-rdf-server/values/demo.yaml \
+          ./helm/static-rdf-server/ > ./kubectlapply.yaml
+          chmod o+w ./kubectlapply.yaml
+          cat kubectlapply.yaml
+
+      - name: Setup gcloud CLI for deploy
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
+
+      - name: Deploy to GCP & check status
+        run: |
+          gcloud container clusters get-credentials digdir-fdk-dev --region europe-north1-a --project digdir-fdk-dev
+          kubectl apply -f ./kubectlapply.yaml --force
+          if ! kubectl --namespace=demo rollout status deployment static-rdf-server; then
+            kubectl --namespace=demo rollout undo deployment static-rdf-server
+            kubectl --namespace=demo rollout status deployment static-rdf-server
+            exit 1
+          fi
+
+      - name: Notify slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: "Application: static-rdf-server | Environment: staging"
+          fields: commit,author,workflow
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
