@@ -156,9 +156,9 @@ async def test_get_ontology_not_found(client: Any, fs: Any) -> None:
     assert response.status == 404
 
 
-# Testing upload files
+# Testing post ontology
 @pytest.mark.integration
-async def test_upload_files(client: Any, fs: Any) -> None:
+async def test_post_ontology(client: Any, fs: Any) -> None:
     """Should return status 201 Created."""
     ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
     ontology_html_file = "tests/files/examples/hello-world/hello-world.html"
@@ -194,16 +194,14 @@ async def test_upload_files(client: Any, fs: Any) -> None:
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
     }
-    response = await client.post(
-        f"/{ontology_type}/upload-files", headers=headers, data=mpwriter
-    )
+    response = await client.post(f"/{ontology_type}", headers=headers, data=mpwriter)
 
     assert response.status == 201
     assert response.headers[hdrs.LOCATION] == f"{ontology_type}/hello-world"
 
 
 @pytest.mark.integration
-async def test_upload_files_file_not_readable(client: Any, fs: Any) -> None:
+async def test_post_ontology_file_not_readable(client: Any, fs: Any) -> None:
     """Should return status 400 Bad Request."""
     ontology_file_not_readable = "tests/files/not_readable_file.pdf"
 
@@ -227,15 +225,13 @@ async def test_upload_files_file_not_readable(client: Any, fs: Any) -> None:
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
     }
-    response = await client.post(
-        f"/{ontology_type}/upload-files", headers=headers, data=mpwriter
-    )
+    response = await client.post(f"/{ontology_type}", headers=headers, data=mpwriter)
 
     assert response.status == 400
 
 
 @pytest.mark.integration
-async def test_upload_files_not_valid_extension(client: Any, fs: Any) -> None:
+async def test_post_ontology_not_valid_extension(client: Any, fs: Any) -> None:
     """Should return status 400 Bad Request."""
     ontology_file_not_valid_extension = "tests/files/not_valide_extension.exe"
     contents = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
@@ -259,15 +255,13 @@ async def test_upload_files_not_valid_extension(client: Any, fs: Any) -> None:
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
     }
-    response = await client.post(
-        f"/{ontology_type}/upload-files", headers=headers, data=mpwriter
-    )
+    response = await client.post(f"/{ontology_type}", headers=headers, data=mpwriter)
 
     assert response.status == 400
 
 
 @pytest.mark.integration
-async def test_upload_files_rdf_file_not_parsable(client: Any, fs: Any) -> None:
+async def test_post_ontology_rdf_file_not_parsable(client: Any, fs: Any) -> None:
     """Should return status 400 Bad Request."""
     ontology_file_not_readable = "tests/files/not_parsable_rdf_file.ttl"
     contents = "no rdf content here"
@@ -292,15 +286,13 @@ async def test_upload_files_rdf_file_not_parsable(client: Any, fs: Any) -> None:
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
     }
-    response = await client.post(
-        f"/{ontology_type}/upload-files", headers=headers, data=mpwriter
-    )
+    response = await client.post(f"/{ontology_type}", headers=headers, data=mpwriter)
 
     assert response.status == 400
 
 
 @pytest.mark.integration
-async def test_upload_files_no_api_key(client: Any, fs: Any) -> None:
+async def test_post_ontology_no_api_key(client: Any, fs: Any) -> None:
     """Should return status 403 Forbidden."""
     ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
     ontology_html_file = "tests/files/examples/hello-world/hello-world.html"
@@ -333,6 +325,6 @@ async def test_upload_files_no_api_key(client: Any, fs: Any) -> None:
         p.headers[hdrs.CONTENT_TYPE] = "text/html"
 
     ontology_type = "contract-tests"
-    response = await client.post(f"/{ontology_type}/upload-files", data=mpwriter)
+    response = await client.post(f"/{ontology_type}", data=mpwriter)
 
     assert response.status == 403

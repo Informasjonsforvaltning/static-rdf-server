@@ -19,7 +19,7 @@ LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
 DATA_ROOT = "/srv/www/static-rdf-server"
 
 
-async def upload_files(request: web.Request) -> web.Response:
+async def post_ontology(request: web.Request) -> web.Response:
     """Process and store files."""
     api_key = request.headers.get("X-API-KEY", None)
     if not api_key or os.getenv("API_KEY", None) != api_key:
@@ -155,6 +155,6 @@ async def create_app() -> web.Application:
     app.router.add_get("/", get_slash)
     app.router.add_get("/{ontology_type}", get_ontology_type)
     app.router.add_get("/{ontology_type}/{ontology}", get_ontology)
-    app.router.add_post("/{ontology_type}/upload-files", upload_files)
+    app.router.add_post("/{ontology_type}", post_ontology)
 
     return app

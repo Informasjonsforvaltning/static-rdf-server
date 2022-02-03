@@ -8,7 +8,7 @@ import pytest
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_upload_files(http_service: Any) -> None:
+async def test_post_ontology(http_service: Any) -> None:
     """Should return 201 Created."""
     ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
     ontology_html_file = "tests/files/examples/hello-world/hello-world.html"
@@ -30,7 +30,7 @@ async def test_upload_files(http_service: Any) -> None:
     ontology_type = "contract-test"
     ontology = "hello-world"
 
-    url = f"{http_service}/{ontology_type}/upload-files"
+    url = f"{http_service}/{ontology_type}"
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
     }
@@ -60,7 +60,7 @@ async def test_upload_files(http_service: Any) -> None:
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_upload_files_no_api_key(http_service: Any) -> None:
+async def test_post_ontology_no_api_key(http_service: Any) -> None:
     """Should return 403 Forbidde."""
     ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
     ontology_html_file = "tests/files/examples/hello-world/hello-world.html"
@@ -81,7 +81,7 @@ async def test_upload_files_no_api_key(http_service: Any) -> None:
 
     ontology_type = "contract-test"
 
-    url = f"{http_service}/{ontology_type}/upload-files"
+    url = f"{http_service}/{ontology_type}"
     async with ClientSession() as session:
         async with session.post(url, data=mpwriter) as response:
             pass

@@ -26,16 +26,37 @@ paths:
               schema:
                 type: string
   /{type}:
+    parameters:
+      - name: type
+        in: path
+        required: true
+        description: the type of ontology
+        schema:
+          type: string
+        example: examples
+    post:
+      security:
+        - ApiKeyAuth: []
+      description: Upload files to server
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                ontology-rdf-file:
+                  type: string
+                  format: binary
+                  description: a file containing the rdf representation of the ontology
+                ontology-html-file:
+                  type: string
+                  format: binary
+                  description: a file containing the html representation of the ontology
+      responses:
+        201:
+          description: Created
     get:
       description: Get html document describing content of given type
-      parameters:
-        - name: type
-          in: path
-          required: true
-          description: the type of ontology
-          schema:
-            type: string
-          example: examples
       responses:
         200:
           description: An html document listing ontologies of given type
@@ -71,28 +92,6 @@ paths:
             text/turtle:
               schema:
                 type: string
-  /{ontology_type}/upload-files:
-    post:
-      security:
-        - ApiKeyAuth: []
-      description: Upload files to server
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                ontology-rdf-file:
-                  type: string
-                  format: binary
-                  description: a file containing the rdf representation of the ontology
-                ontology-html-file:
-                  type: string
-                  format: binary
-                  description: a file containing the html representation of the ontology
-      responses:
-        201:
-          description: Created
 components:
   securitySchemes:
     ApiKeyAuth:
