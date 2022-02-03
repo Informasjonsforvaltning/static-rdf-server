@@ -16,9 +16,9 @@ To get content from the server:
 % curl -H  http://localhost:8080/examples/hello-world  # will return a hello-world HTML document
 ```
 
-### To post content to the server
+### To upload content to the server
 
-Say you want to post two files to your ontology of ontology-type "vocabulary".
+Say you want to upload two files to your ontology of ontology-type "vocabulary".
 
 ```shell
 % curl -i \
@@ -26,8 +26,10 @@ Say you want to post two files to your ontology of ontology-type "vocabulary".
  -H "Content-Type: multipart/form-data" \
  -F "ontology-rdf-file=@path/to/your/files/ontology.ttl;type=text/turtle" \
  -F "ontology-html-file=@path/to/your/files/ontology.html;type=text/html" \
- -X POST http://localhost:8000/vocabulary
+ -X PUT http://localhost:8000/vocabulary/ontology
 ```
+
+If the ontology exists, it will be updated. Otherwise it will be created.
 
 ## Location of ontology files
 
