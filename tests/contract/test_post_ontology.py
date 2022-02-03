@@ -8,8 +8,8 @@ import pytest
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_upload_files(http_service: Any) -> None:
-    """Should return 201 Created."""
+async def test_put_ontology(http_service: Any) -> None:
+    """Should return 204 No content."""
     ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
     ontology_html_file = "tests/files/examples/hello-world/hello-world.html"
 
@@ -30,17 +30,15 @@ async def test_upload_files(http_service: Any) -> None:
     ontology_type = "contract-test"
     ontology = "hello-world"
 
-    url = f"{http_service}/{ontology_type}/upload-files"
+    url = f"{http_service}/{ontology_type}/{ontology}"
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
     }
     async with ClientSession() as session:
-        async with session.post(url, headers=headers, data=mpwriter) as response:
+        async with session.put(url, headers=headers, data=mpwriter) as response:
             pass
-        assert response.status == 201
-        assert response.headers[hdrs.LOCATION] == f"{ontology_type}/{ontology}"
+        assert response.status == 204
 
-        url = f"{http_service}/{response.headers[hdrs.LOCATION]}"
         headers = {hdrs.ACCEPT: "text/turtle"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
@@ -60,8 +58,8 @@ async def test_upload_files(http_service: Any) -> None:
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_upload_files_no_api_key(http_service: Any) -> None:
-    """Should return 403 Forbidde."""
+async def test_post_ontology_no_api_key(http_service: Any) -> None:
+    """Should return 403 Forbidden."""
     ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
     ontology_html_file = "tests/files/examples/hello-world/hello-world.html"
 
@@ -80,9 +78,10 @@ async def test_upload_files_no_api_key(http_service: Any) -> None:
         p.headers[hdrs.CONTENT_TYPE] = "text/html"
 
     ontology_type = "contract-test"
+    ontology = "hello-world"
 
-    url = f"{http_service}/{ontology_type}/upload-files"
+    url = f"{http_service}/{ontology_type}/{ontology}"
     async with ClientSession() as session:
-        async with session.post(url, data=mpwriter) as response:
+        async with session.put(url, data=mpwriter) as response:
             pass
         assert response.status == 403
