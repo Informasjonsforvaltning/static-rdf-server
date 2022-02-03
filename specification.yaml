@@ -34,7 +34,32 @@ paths:
         schema:
           type: string
         example: examples
-    post:
+    get:
+      description: Get html document describing content of given type
+      responses:
+        200:
+          description: An html document listing ontologies of given type
+          content:
+            text/html:
+              schema:
+                type: string
+  /{type}/{ontology}:
+    parameters:
+      - name: type
+        in: path
+        required: true
+        description: the type of ontology
+        schema:
+          type: string
+        example: examples
+      - name: ontology
+        in: path
+        required: true
+        description: the name of the ontology
+        schema:
+          type: string
+        example: hello-world
+    put:
       security:
         - ApiKeyAuth: []
       description: Upload files to server
@@ -53,35 +78,10 @@ paths:
                   format: binary
                   description: a file containing the html representation of the ontology
       responses:
-        201:
-          description: Created
-    get:
-      description: Get html document describing content of given type
-      responses:
-        200:
-          description: An html document listing ontologies of given type
-          content:
-            text/html:
-              schema:
-                type: string
-  /{type}/{ontology}:
+        204:
+          description: If the ontology existed, it is updated, else it is created.
     get:
       description: Get representation of the given ontology
-      parameters:
-        - name: type
-          in: path
-          required: true
-          description: the type of ontology
-          schema:
-            type: string
-          example: examples
-        - name: ontology
-          in: path
-          required: true
-          description: the name of the ontology
-          schema:
-            type: string
-          example: hello-world
       responses:
         200:
           description: An ontology document of given type
