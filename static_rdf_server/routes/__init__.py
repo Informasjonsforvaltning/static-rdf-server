@@ -1,0 +1,6 @@
+"""Package for routes."""
+from .ontology import get_ontology, put_ontology
+from .ontology_type import get_ontology_type
+from .ping import ping
+from .ready import ready
+from .slash import get_slash

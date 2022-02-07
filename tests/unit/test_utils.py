@@ -1,83 +1,102 @@
 """Unit test cases for the event-service module."""
-from multidict import CIMultiDict, CIMultiDictProxy
 import pytest
 
 from static_rdf_server.utils import (
     ContentTypeNotSupported,
-    decide_content_type_and_suffix,
+    decide_content_and_extension,
 )
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_default() -> None:
-    """Should return text/html, .html."""
-    headers = CIMultiDictProxy(CIMultiDict(noAcceptheader=""))
-
-    content_type, suffix = await decide_content_type_and_suffix(headers)
+async def test_decide_content_type_and_extension_default() -> None:
+    """Should return text/html, html."""
+    content_type, content_language, extension = await decide_content_and_extension()
 
     assert content_type == "text/html"
-    assert suffix == ".html"
+    assert content_language == ""
+    assert extension == "html"
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_star() -> None:
-    """Should return text/html, .html."""
-    headers = CIMultiDictProxy(CIMultiDict(accept="*/*"))
+async def test_decide_content_type_and_extension_star() -> None:
+    """Should return text/html, html."""
+    accept_header = "*/*"
+    accept_language_header = ""
 
-    content_type, suffix = await decide_content_type_and_suffix(headers)
+    content_type, content_language, extension = await decide_content_and_extension(
+        accept_header, accept_language_header
+    )
 
     assert content_type == "text/html"
-    assert suffix == ".html"
+    assert content_language == ""
+    assert extension == "html"
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_turtle_plus_star() -> None:
-    """Should return text/turtle, .ttl."""
-    headers = CIMultiDictProxy(CIMultiDict(accept="text/turtle,*/*"))
+async def test_decide_content_type_and_extension_turtle_plus_star() -> None:
+    """Should return text/turtle, ttl."""
+    accept_header = "text/turtle,*/*"
+    accept_language_header = ""
 
-    content_type, suffix = await decide_content_type_and_suffix(headers)
+    content_type, content_language, extension = await decide_content_and_extension(
+        accept_header, accept_language_header
+    )
 
     assert content_type == "text/turtle"
-    assert suffix == ".ttl"
+    assert content_language == ""
+    assert extension == "ttl"
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_html_plus_star() -> None:
-    """Should return text/turtle, .ttl."""
-    headers = CIMultiDictProxy(CIMultiDict(accept="text/html,*/*"))
+async def test_decide_content_type_and_extension_html_plus_star() -> None:
+    """Should return text/turtle, ttl."""
+    accept_header = "text/html,*/*"
+    accept_language_header = ""
 
-    content_type, suffix = await decide_content_type_and_suffix(headers)
+    content_type, content_language, extension = await decide_content_and_extension(
+        accept_header, accept_language_header
+    )
 
     assert content_type == "text/html"
-    assert suffix == ".html"
+    assert content_language == ""
+    assert extension == "html"
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_html() -> None:
-    """Should return text/html, .html."""
-    headers = CIMultiDictProxy(CIMultiDict(accept="text/html"))
+async def test_decide_content_type_and_extension_html() -> None:
+    """Should return text/html, html."""
+    accept_header = "text/html"
+    accept_language_header = ""
 
-    content_type, suffix = await decide_content_type_and_suffix(headers)
+    content_type, content_language, extension = await decide_content_and_extension(
+        accept_header, accept_language_header
+    )
 
     assert content_type == "text/html"
-    assert suffix == ".html"
+    assert content_language == ""
+    assert extension == "html"
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_RDF_turtle() -> None:
-    """Should return text/turtle, .ttl."""
-    headers = CIMultiDictProxy(CIMultiDict(accept="text/turtle"))
+async def test_decide_content_type_and_extension_RDF_turtle() -> None:
+    """Should return text/turtle, ttl."""
+    accept_header = "text/turtle"
+    accept_language_header = ""
 
-    content_type, suffix = await decide_content_type_and_suffix(headers)
+    content_type, content_language, extension = await decide_content_and_extension(
+        accept_header, accept_language_header
+    )
 
     assert content_type == "text/turtle"
-    assert suffix == ".ttl"
+    assert content_language == ""
+    assert extension == "ttl"
 
 
 @pytest.mark.unit
-async def test_decide_content_type_and_suffix_not_supported() -> None:
+async def test_decide_content_type_and_extension_not_supported() -> None:
     """Should raise ContentTypeNotSupported exception."""
-    headers = CIMultiDictProxy(CIMultiDict(accept="not/supported"))
+    accept_header = "not/supported"
+    accept_language_header = ""
 
     with pytest.raises(ContentTypeNotSupported):
-        await decide_content_type_and_suffix(headers)
+        await decide_content_and_extension(accept_header, accept_language_header)
