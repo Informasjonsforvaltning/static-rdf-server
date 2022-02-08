@@ -1,2 +1,2 @@
 <http://example.com/server> <http://example.com/says> "Hello World" .
-<http://example.com/server> <http://example.com/says> "This greeting was last updated 2022-02-03 15:20:44." .
+<http://example.com/server> <http://example.com/says> "This greeting was last updated 2022-02-08 10:26:44." .

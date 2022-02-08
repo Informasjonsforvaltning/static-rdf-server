@@ -1,0 +1,29 @@
+name: upload test files to server
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  test_uploading_of_file:
+    name: Test uploading of file to server in staging environment
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Upload to static-rdf-server in staging
+        uses: Informasjonsforvaltning/upload-files-to-static-rdf-server-action@v1.0.0-alpha.2
+        id: hello-world
+        with:
+          ontology-type: "examples"
+          ontology: "hello-world"
+          rdf-file: "testfiles/hello-world.ttl"
+          html-file: "testfiles/hello-world-en.html"
+          html-file-language: "en"
+          host: "https://staging.fellesdatakatalog.digdir.no"
+          api-key: ${{ secrets.API_KEY }}

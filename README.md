@@ -9,27 +9,26 @@ The server supports all of the "standard" serializations of RDF:
 
 ## Usage
 
-To get content from the server:
-
-```shell
-% curl -H "Accept: text/turtle" http://localhost:8080/examples/hello-world  # will return a hello-world RDF document
-% curl -H  http://localhost:8080/examples/hello-world  # will return a hello-world HTML document
-```
-
 ### To upload content to the server
 
 Say you want to upload two files to your ontology of ontology-type "vocabulary".
 
 ```shell
-% curl -i \
- -H "X-API-KEY: <a valid api-key>" \
- -H "Content-Type: multipart/form-data" \
- -F "ontology-rdf-file=@path/to/your/files/ontology.ttl;type=text/turtle" \
- -F "ontology-html-file=@path/to/your/files/ontology.html;type=text/html" \
- -X PUT http://localhost:8000/vocabulary/ontology
+% curl -i \ 
+ -H "X-API-KEY: supersecretapikey" \
+ -F "ontology-rdf-file=@tests/files/examples/hello-world/hello-world.ttl;type=text/turtle" \
+ -F "ontology-html-file=@tests/files/examples/hello-world/hello-world-en.html;type=text/html;headers=\"content-language: en\"" \
+ -X PUT http://localhost:8080/examples/hello-world
 ```
 
 If the ontology exists, it will be updated. Otherwise it will be created.
+
+### To get content from the server
+
+```shell
+% curl -H "Accept: text/turtle" http://localhost:8080/examples/hello-world  # will return a hello-world RDF document
+% curl -H  http://localhost:8080/examples/hello-world  # will return a hello-world HTML document
+```
 
 ## Location of ontology files
 
@@ -39,27 +38,35 @@ Ontolgies are grouped by types, e.g.
 - vocabularies
 - ...
 
-This directory should be structured as follows:
+This directory on the server will be structured as follows:
 
 ```Shell
 static-rdf-server
-├── index.html
-├── ontology-type_1
-│  ├── ontology_1
-│  │   ├── ontology_1.ttl 
-│  │   └── ontology_1.html
-│  ├── ontology_1
-│  │   ├── ontology_1.ttl 
-│  │   └── ontology_1.html
+├── ontology-type-1
+│  ├── ontology-1
+│  │   ├── ontology-1.ttl 
+│  │   ├── ontology-1-en.html 
+│  │   ├── ontology-1-nb.html 
+│  │   └── ontology-1-nn.html
+│  ├── ontology_2
+│  │   └── ontology-2.ttl 
+│  │   ├── ontology-2-en.html 
+│  │   ├── ontology-2-nb.html 
+│  │   └── ontology-2-nn.html
 │  └── index.html
-└── ontology-type_2
-   ├── ontology_3
-   │   ├── ontology_3.ttl 
-   │   └── ontology_3.html
-   ├── ontology_4
-   │   ├── ontology_4.ttl 
-   │   └── ontology_4.html
-   └── index.html
+├── ontology-type-2
+|  ├── ontology-3
+|  │   ├── ontology-3.ttl 
+|  │   ├── ontology-3-en.html 
+|  │   ├── ontology-3-nb.html 
+|  │   └── ontology-3-nn.html
+|  ├── ontology-4
+|  │   ├── ontology-4.ttl 
+|  │   ├── ontology-4-en.html 
+|  │   ├── ontology-4-nb.html 
+|  │   └── ontology-4-nn.html
+|  └── index.html
+└── index.html
 ```
 
 The static files to be served should be store under `/srv/www/static-rdf-server`.
