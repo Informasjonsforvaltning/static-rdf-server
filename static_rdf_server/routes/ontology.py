@@ -1,6 +1,7 @@
 """Module for ontology route."""
 import logging
 import os
+import shutil
 
 from aiohttp import hdrs, web
 from multidict import MultiDict
@@ -150,3 +151,27 @@ async def get_ontology(request: web.Request) -> web.Response:
 
     # If we are here, the ontology does exist, but there is no suitable representation:
     raise web.HTTPNotAcceptable() from None
+
+
+async def delete_ontology(request: web.Request) -> web.Response:
+    """Return default response."""
+    api_key = request.headers.get("X-API-KEY", None)
+    if not api_key or os.getenv("API_KEY", None) != api_key:
+        raise web.HTTPForbidden()
+
+    data_root = request.app["DATA_ROOT"]
+    ontology_type = request.match_info["ontology_type"]
+    ontology = request.match_info["ontology"]
+
+    logging.debug(f"Got request for folder/file {ontology_type}/{ontology}")
+    logging.debug(f"Got request-headers: {request.headers}")
+
+    # First we check if the ontology exist:
+    ontology_path = os.path.join(os.sep, data_root, ontology_type, ontology)
+    logging.debug(f"Looking for ontology_path: {ontology_path}")
+    if not os.path.exists(ontology_path):
+        raise web.HTTPNotFound()
+
+    shutil.rmtree(ontology_path)
+
+    return web.Response(status=204)
