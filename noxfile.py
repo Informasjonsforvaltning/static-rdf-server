@@ -77,7 +77,7 @@ def contract_tests(session: Session) -> None:
         "-rA",
         *args,
         env={
-            "LOGGING_LEVEL": "INFO",
+            "LOGGING_LEVEL": "DEBUG",
         },
     )
 
