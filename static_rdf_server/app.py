@@ -8,6 +8,7 @@ from aiohttp_middlewares import cors_middleware, error_middleware
 from dotenv import load_dotenv
 
 from .routes import (
+    delete_ontology,
     get_ontology,
     get_ontology_type,
     get_slash,
@@ -41,6 +42,7 @@ async def create_app() -> web.Application:
     app.router.add_get("/{ontology_type}", get_ontology_type)
     app.router.add_get("/{ontology_type}/{ontology}", get_ontology)
     app.router.add_put("/{ontology_type}/{ontology}", put_ontology)
+    app.router.add_delete("/{ontology_type}/{ontology}", delete_ontology)
 
     async def app_context(app: Any) -> Any:
         # Set up context:

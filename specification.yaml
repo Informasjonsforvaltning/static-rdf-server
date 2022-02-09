@@ -92,6 +92,11 @@ paths:
             text/turtle:
               schema:
                 type: string
+    delete:
+      description: Delete representations of the given ontology
+      responses:
+        204:
+          description: If the ontology existed, it is deleted.
 components:
   securitySchemes:
     ApiKeyAuth:

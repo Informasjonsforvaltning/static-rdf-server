@@ -30,6 +30,12 @@ If the ontology exists, it will be updated. Otherwise it will be created.
 % curl -H  http://localhost:8080/examples/hello-world  # will return a hello-world HTML document
 ```
 
+### To delete an ontology from the server
+
+```shell
+% curl -i -H "X-API-KEY: supersecretapikey" -X DELETE http://localhost:8080/examples/hello-world
+```
+
 ## Location of ontology files
 
 Ontolgies are grouped by types, e.g.
