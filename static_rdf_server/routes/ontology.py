@@ -168,7 +168,7 @@ async def delete_ontology(request: web.Request) -> web.Response:
 
     # First we check if the ontology exist:
     ontology_path = os.path.join(os.sep, data_root, ontology_type, ontology)
-    logging.debug(f"Looking for ontology_path: {ontology_path}")
+    logging.debug(f"Trying to delete ontology with path: {ontology_path}")
     if not os.path.exists(ontology_path):
         raise web.HTTPNotFound()
 
