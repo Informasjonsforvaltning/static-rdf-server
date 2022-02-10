@@ -8,25 +8,35 @@ import pytest
 @pytest.mark.integration
 async def test_get_slash(client: Any, fs: Any) -> None:
     """Should return status 200 OK and html document."""
-    contents = ""
-    fs.create_file(
-        "/srv/www/static-rdf-server/index.html",
-        contents=contents,
+    expected = (
+        "<!doctype html>"
+        '<html lang="nb">'
+        "<title>Ontologi-typer</title>"
+        "<body>"
+        "<p>Typer</p>"
+        '<p> - <a href="examples">examples</a></p>'
     )
 
-    response = await client.get("/")
+    ontology_type = "examples"
+    fs.create_dir(f"/srv/www/static-rdf-server/{ontology_type}")
+
+    headers = {hdrs.ACCEPT: "text/html"}
+    response = await client.get("/", headers=headers)
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+
     text = await response.text()
-    assert text == contents
+    assert text == expected
 
 
 @pytest.mark.integration
-async def test_get_slash_not_found(client: Any, fs: Any) -> None:
-    """Should return status 404 Not found."""
-    fs.create_dir("/srv/www/static-rdf-server")
+async def test_get_slash_ask_for_turtle(client: Any, fs: Any) -> None:
+    """Should return status 406 Not Acceptable."""
+    fs.create_dir("/srv/www/static-rdf-server/examples")
 
-    response = await client.get("/")
+    headers = {hdrs.ACCEPT: "text/turtle"}
+    response = await client.get("/", headers=headers)
 
-    assert response.status == 404
+    assert response.status == 406
