@@ -11,10 +11,10 @@ async def test_get_ontology_type(http_service: Any) -> None:
     """Should return 200 OK and a html-document with a list of ontologies for the given type."""
     expected_body = (
         "<!doctype html>"
-        '<html lang="nb">'
-        "<title>Ontologier</title>"
+        '<html lang="en">'
+        "<title>Examples</title>"
         "<body>"
-        "<p>Ontologier av typen <i>examples</i></p>"
+        "<p><b>Examples</b></p>"
         '<p> - <a href="examples/hello-world">hello-world</a></p>'
     )
 

@@ -10,14 +10,14 @@ async def test_get_ontology_type(client: Any, fs: Any) -> None:
     """Should return status 200 OK and html document."""
     expected = (
         "<!doctype html>"
-        '<html lang="nb">'
-        "<title>Ontologier</title>"
+        '<html lang="en">'
+        "<title>Examples</title>"
         "<body>"
-        "<p>Ontologier av typen <i>ontology-type-1</i></p>"
-        '<p> - <a href="ontology-type-1/hello-world">hello-world</a></p>'
+        "<p><b>Examples</b></p>"
+        '<p> - <a href="examples/hello-world">hello-world</a></p>'
     )
 
-    ontology_type = "ontology-type-1"
+    ontology_type = "examples"
     ontology = "hello-world"
     fs.create_dir(f"/srv/www/static-rdf-server/{ontology_type}")
     contents = """

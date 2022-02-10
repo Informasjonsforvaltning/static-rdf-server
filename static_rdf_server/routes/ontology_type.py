@@ -36,10 +36,10 @@ async def generate_html_document(ontology_type: str, ontologies: List[str]) -> s
 
     # Generate the statements:
     html_statements.append("<!doctype html>")
-    html_statements.append('<html lang="nb">')
-    html_statements.append("<title>Ontologier</title>")
+    html_statements.append('<html lang="en">')
+    html_statements.append(f"<title>{ontology_type.title()}</title>")
     html_statements.append("<body>")
-    html_statements.append(f"<p>Ontologier av typen <i>{ontology_type}</i></p>")
+    html_statements.append(f"<p><b>{ontology_type.title()}</b></p>")
     for ontology in ontologies:
         html_statements.append(
             f'<p> - <a href="{ontology_type}/{ontology}">{ontology}</a></p>'
