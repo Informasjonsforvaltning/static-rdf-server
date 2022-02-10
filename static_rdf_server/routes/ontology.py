@@ -23,6 +23,13 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         raise web.HTTPForbidden()
 
     ontology_type = request.match_info["ontology_type"]
+    # Check if ontology-type exist. Otherwise return 404:
+    ontology_type_folder = os.path.join(data_root, ontology_type)
+    if not os.path.exists(ontology_type_folder):
+        raise web.HTTPNotFound(
+            reason=f"Ontology-type {ontology_type} does not exist."
+        ) from None
+
     ontology = request.match_info["ontology"]
     content_language: str = ""
     extension: str
