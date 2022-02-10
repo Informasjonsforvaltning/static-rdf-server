@@ -12,13 +12,14 @@ async def test_get_ontology_type(http_service: Any) -> None:
     expected_body = (
         "<!doctype html>"
         '<html lang="en">'
-        "<title>Examples</title>"
+        "<title>Contract-Test</title>"
         "<body>"
-        "<p><b>Examples</b></p>"
-        '<p> - <a href="examples/hello-world">hello-world</a></p>'
+        "<p><b>Contract-Test</b></p>"
+        '<p> - <a href="contract-test/hello-world">hello-world</a></p>'
+        '<p> - <a href="contract-test/hello-world-to-be-deleted">hello-world-to-be-deleted</a></p>'
     )
 
-    url = f"{http_service}/examples"
+    url = f"{http_service}/contract-test"
 
     async with ClientSession() as session:
         async with session.get(url) as response:
@@ -26,4 +27,6 @@ async def test_get_ontology_type(http_service: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+
     assert text == expected_body

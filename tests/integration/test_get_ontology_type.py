@@ -39,7 +39,7 @@ async def test_get_ontology_type(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
 
     text = await response.text()
     assert text == expected

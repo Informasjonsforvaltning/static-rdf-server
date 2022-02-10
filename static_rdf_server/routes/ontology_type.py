@@ -18,14 +18,13 @@ async def get_ontology_type(request: web.Request) -> web.Response:
 
     data_root = request.app["DATA_ROOT"]
     ontology_type_path = os.path.join(data_root, ontology_type)
-    default_language = request.app["DEFAULT_LANGUAGE"]
 
     # Read content of data-root, and map all folders to a list of ontology_types:
     ontologies: List[Any] = next(os.walk(ontology_type_path), (None, [], None))[1]
 
     # Generate html with the list as body:
     body = await generate_html_document(ontology_type, ontologies)
-    headers = MultiDict([(hdrs.CONTENT_LANGUAGE, default_language)])
+    headers = MultiDict([(hdrs.CONTENT_LANGUAGE, "en")])
 
     return web.Response(text=body, headers=headers, content_type="text/html")
 
@@ -33,6 +32,9 @@ async def get_ontology_type(request: web.Request) -> web.Response:
 async def generate_html_document(ontology_type: str, ontologies: List[str]) -> str:
     """Based on list of ontologies, generate a html-document."""
     html_statements: List[str] = []
+
+    # Sort the list alphabetically:
+    ontologies.sort()
 
     # Generate the statements:
     html_statements.append("<!doctype html>")
