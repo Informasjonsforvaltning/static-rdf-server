@@ -11,13 +11,24 @@ async def test_get_slash(http_service: Any) -> None:
     """Should return 200 OK and a html-document."""
     url = f"{http_service}/"
 
+    expected_body = (
+        "<!doctype html>"
+        '<html lang="nb">'
+        "<title>Ontologi-typer</title>"
+        "<body>"
+        "<p>Typer</p>"
+        '<p> - <a href="contract-test">contract-test</a></p>'
+        '<p> - <a href="examples">examples</a></p>'
+    )
+
     async with ClientSession() as session:
         async with session.get(url) as response:
-            text = await response.text()
+            body = await response.text()
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert text
+    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert body == expected_body
 
 
 @pytest.mark.contract
@@ -31,8 +42,6 @@ async def test_get_slash_turtle(http_service: Any) -> None:
 
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
-            text = await response.text()
+            pass
 
-    assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert text
+    assert response.status == 406

@@ -7,21 +7,6 @@ import pytest
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_get_types(http_service: Any) -> None:
-    """Should return 200 OK and a html-document."""
-    url = f"{http_service}/examples"
-
-    async with ClientSession() as session:
-        async with session.get(url) as response:
-            document = await response.text()
-
-    assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert document
-
-
-@pytest.mark.contract
-@pytest.mark.asyncio
 async def test_get_example_hello_world_default(http_service: Any) -> None:
     """Should return 200 OK and a html-document in Norwegian bokmål."""
     url = f"{http_service}/examples/hello-world"

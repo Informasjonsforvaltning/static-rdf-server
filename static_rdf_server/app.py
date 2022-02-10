@@ -19,7 +19,7 @@ from .routes import (
 
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
-DATA_ROOT = "/srv/www/static-rdf-server"
+DATA_ROOT = os.getenv("DATA_ROOT", "/srv/www/static-rdf-server")
 DEFAULT_LANGUAGE = "nb"
 
 

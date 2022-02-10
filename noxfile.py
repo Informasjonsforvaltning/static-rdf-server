@@ -56,7 +56,7 @@ def integration_tests(session: Session) -> None:
         "-m integration",
         "-rF",
         *args,
-        env={},
+        env={"LOGGING_LEVEL": "DEBUG", "DATA_ROOT": "/srv/www/static-rdf-server"},
     )
 
 

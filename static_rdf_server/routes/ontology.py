@@ -111,10 +111,9 @@ async def get_ontology(request: web.Request) -> web.Response:
     ontology = request.match_info["ontology"]
 
     logging.debug(f"Got request for folder/file {ontology_type}/{ontology}")
-    logging.debug(f"Got request-headers: {request.headers}")
 
     # First we check if the ontology exist:
-    ontology_path = os.path.join(os.sep, data_root, ontology_type, ontology)
+    ontology_path = os.path.join(data_root, ontology_type, ontology)
     logging.debug(f"Looking for ontology_path: {ontology_path}")
     if not os.path.exists(ontology_path):
         raise web.HTTPNotFound()
@@ -136,7 +135,7 @@ async def get_ontology(request: web.Request) -> web.Response:
         filename = f"{ontology}.{extension}"
 
     # Try to get exact match on language:
-    full_path = os.path.join(os.sep, data_root, ontology_type, ontology, filename)
+    full_path = os.path.join(data_root, ontology_type, ontology, filename)
     logging.debug(f"Looking for full_path: {full_path}")
     if os.path.exists(full_path):
         with open(full_path, "r") as f:
@@ -148,7 +147,7 @@ async def get_ontology(request: web.Request) -> web.Response:
     # For html-requests, if not found, we return the representation in the default langauge:
     if content_type == "text/html":
         filename = f"{ontology}-{default_language}.{extension}"
-        full_path = os.path.join(os.sep, data_root, ontology_type, ontology, filename)
+        full_path = os.path.join(data_root, ontology_type, ontology, filename)
         if os.path.exists(full_path):
             with open(full_path, "r") as f:
                 body = f.read()
@@ -174,7 +173,7 @@ async def delete_ontology(request: web.Request) -> web.Response:
     logging.debug(f"Got request-headers: {request.headers}")
 
     # First we check if the ontology exist:
-    ontology_path = os.path.join(os.sep, data_root, ontology_type, ontology)
+    ontology_path = os.path.join(data_root, ontology_type, ontology)
     logging.debug(f"Trying to delete ontology with path: {ontology_path}")
     if not os.path.exists(ontology_path):
         raise web.HTTPNotFound()

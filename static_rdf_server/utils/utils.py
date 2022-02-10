@@ -40,7 +40,12 @@ async def decide_content_and_extension(
     # for text/html, we inspect the accept-language-header:
     if content_type == "text/html":
         if accept_language_header:
-            content_language = accept_language_header
+            if "en" in accept_language_header:
+                content_language = "en"
+            elif "nn" in accept_language_header:
+                content_language = "nn"
+            else:
+                content_language = "nb"
         else:
             pass
 
