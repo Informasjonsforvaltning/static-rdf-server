@@ -36,6 +36,12 @@ If the ontology exists, it will be updated. Otherwise it will be created.
 % curl -i -H "X-API-KEY: supersecretapikey" -X DELETE http://localhost:8080/examples/hello-world
 ```
 
+### To create a new type
+
+```Shell
+% curl -H "Content-type: application/json" -X POST --data '{"type":"specification"}' http://localhost:8080
+```
+
 ## Location of ontology files
 
 Ontolgies are grouped by types, e.g.
