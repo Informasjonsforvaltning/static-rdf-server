@@ -1,9 +1,36 @@
 """Module for ontology route."""
+import logging
 import os
 from typing import Any, List
 
 from aiohttp import hdrs, web
 from multidict import MultiDict
+
+
+async def put_ontology_type(request: web.Request) -> web.Response:
+    """Process and store type."""
+    data_root = request.app["DATA_ROOT"]
+    api_key = request.headers.get("X-API-KEY", None)
+    if not api_key or os.getenv("API_KEY", None) != api_key:
+        raise web.HTTPForbidden()
+
+    ontology_type = request.match_info["ontology_type"]
+    logging.debug(f"Got put request for {ontology_type}.")
+
+    # Decide status_code:
+    destination = os.path.join(data_root, ontology_type)
+    if os.path.exists(destination):
+        status_code = 204
+    else:
+        status_code = 201
+
+    # Create destination folders:
+    destination = os.path.join(data_root, ontology_type)
+    if not os.path.exists(destination):
+        os.makedirs(destination)
+
+    headers = MultiDict([(hdrs.LOCATION, f"{ontology_type}")])
+    return web.Response(status=status_code, headers=headers)
 
 
 async def get_ontology_type(request: web.Request) -> web.Response:

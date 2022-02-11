@@ -34,6 +34,24 @@ paths:
         schema:
           type: string
         example: examples
+    put:
+      security:
+        - ApiKeyAuth: []
+      description: Create or update a type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: the name of the type
+      responses:
+        201:
+          description: Ontology did not exist before and it is sucessfully created.
+        204:
+          description: Ontology did exist before and it is sucessfully updated.
     get:
       description: Get html document describing content of given type
       responses:

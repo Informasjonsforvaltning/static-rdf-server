@@ -14,6 +14,7 @@ from .routes import (
     get_slash,
     ping,
     put_ontology,
+    put_ontology_type,
     ready,
 )
 
@@ -40,6 +41,7 @@ async def create_app() -> web.Application:
     app.router.add_get("/ping", ping)
     app.router.add_get("/", get_slash)
     app.router.add_get("/{ontology_type}", get_ontology_type)
+    app.router.add_put("/{ontology_type}", put_ontology_type)
     app.router.add_get("/{ontology_type}/{ontology}", get_ontology)
     app.router.add_put("/{ontology_type}/{ontology}", put_ontology)
     app.router.add_delete("/{ontology_type}/{ontology}", delete_ontology)
