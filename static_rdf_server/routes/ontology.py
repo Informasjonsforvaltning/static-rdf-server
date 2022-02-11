@@ -35,6 +35,13 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
     extension: str
     logging.debug(f"Got put request{ontology_type}/{ontology}.")
 
+    # Decide status_code:
+    destination = os.path.join(data_root, ontology_type, ontology)
+    if os.path.exists(destination):
+        status_code = 204
+    else:
+        status_code = 201
+
     # Processing parts:
     async for part in (await request.multipart()):
         logging.debug(f"part.name {part.name}.")
@@ -100,7 +107,8 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         with open(path, "w") as file:
             file.write(ontology_file)
 
-    return web.Response(status=204)
+    headers = MultiDict([(hdrs.LOCATION, f"{ontology_type}/{ontology}")])
+    return web.Response(status=status_code, headers=headers)
 
 
 async def get_ontology(request: web.Request) -> web.Response:

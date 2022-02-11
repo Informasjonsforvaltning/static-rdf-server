@@ -63,6 +63,7 @@ async def test_put_ontology(http_service: Any) -> None:
 
         # ASSERT
         assert response.status == 204, body
+        assert f"{ontology_type}/{ontology}" in response.headers[hdrs.LOCATION]
 
         # Get turtle-representation:
         headers = {hdrs.ACCEPT: "text/turtle"}

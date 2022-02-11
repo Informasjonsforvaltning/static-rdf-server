@@ -8,7 +8,7 @@ import pytest
 
 @pytest.mark.integration
 async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -> None:
-    """Should return status 204 No Content."""
+    """Should return status 201 Created and location header."""
     data_root = "/srv/www/static-rdf-server"
     ontology_type = "examples"
     ontology = "hello-world"
@@ -58,20 +58,19 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
     response = await client.put(
         f"/{ontology_type}/{ontology}", headers=headers, data=mpwriter
     )
-    if response.status != 204:
-        body = await response.json()
 
-    assert response.status == 204, body
+    assert response.status == 201
+    assert f"{ontology_type}/{ontology}" in response.headers[hdrs.LOCATION]
 
 
 @pytest.mark.integration
 async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> None:
-    """Should return status 204 No Content."""
+    """Should return status 204 No Content and location header."""
     data_root = "/srv/www/static-rdf-server"
     ontology_type = "examples"
     ontology = "hello-world"
 
-    fs.create_dir(f"{data_root}/{ontology_type}")
+    fs.create_dir(f"{data_root}/{ontology_type}/{ontology}")
 
     rdf_file = f'/srv/www/static-rdf-server"/{ontology_type}/{ontology}/{ontology}.ttl'
     rdf_content = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
@@ -118,10 +117,9 @@ async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> No
     response = await client.put(
         f"/{ontology_type}/{ontology}", headers=headers, data=mpwriter
     )
-    if response.status != 204:
-        body = await response.json()
 
-    assert response.status == 204, body
+    assert response.status == 204
+    assert f"{ontology_type}/{ontology}" in response.headers[hdrs.LOCATION]
 
 
 @pytest.mark.integration

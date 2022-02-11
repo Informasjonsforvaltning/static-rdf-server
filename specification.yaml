@@ -78,8 +78,10 @@ paths:
                   format: binary
                   description: a file containing the html representation of the ontology
       responses:
+        201:
+          description: Ontology did not exist before and it is sucessfully created.
         204:
-          description: If the ontology existed, it is updated, else it is created.
+          description: Ontology did exist before and it is sucessfully updated.
     get:
       description: Get representation of the given ontology
       responses:
