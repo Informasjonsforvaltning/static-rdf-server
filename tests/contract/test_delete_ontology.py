@@ -57,12 +57,9 @@ async def ontology_to_be_deleted(http_service: Any) -> None:
     }
     async with ClientSession() as session:
         async with session.put(url, headers=headers, data=mpwriter) as response:
-            if response.status != 204:
-                body = await response.json()
             pass
-
         # ASSERT
-        assert response.status == 204, body
+    assert response.status in [201, 204]
 
 
 @pytest.mark.contract
