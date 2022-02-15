@@ -106,8 +106,10 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         logging.debug(f"Writing to path: {path}.")
         with open(path, "w") as file:
             file.write(ontology_file)
-
-    headers = MultiDict([(hdrs.LOCATION, f"{ontology_type}/{ontology}")])
+    if status_code == 201:
+        headers = MultiDict([(hdrs.LOCATION, f"{ontology_type}/{ontology}")])
+    else:
+        headers = None
     return web.Response(status=status_code, headers=headers)
 
 

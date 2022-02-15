@@ -65,7 +65,7 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
 
 @pytest.mark.integration
 async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> None:
-    """Should return status 204 No Content and location header."""
+    """Should return status 204 No Content."""
     data_root = "/srv/www/static-rdf-server"
     ontology_type = "examples"
     ontology = "hello-world"
@@ -119,7 +119,7 @@ async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> No
     )
 
     assert response.status == 204
-    assert f"{ontology_type}/{ontology}" in response.headers[hdrs.LOCATION]
+    assert hdrs.LOCATION not in response.headers
 
 
 @pytest.mark.integration
