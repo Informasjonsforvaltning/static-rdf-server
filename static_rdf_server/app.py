@@ -20,7 +20,9 @@ from .routes import (
 
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
-DATA_ROOT = os.getenv("DATA_ROOT", "/srv/www/static-rdf-server")
+SERVER_ROOT = os.getenv("SERVER_ROOT", "/srv/www/static-rdf-server")
+DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(SERVER_ROOT, "data"))
+STATIC_ROOT = os.getenv("STATIC_ROOT", os.path.join(SERVER_ROOT, "static"))
 DEFAULT_LANGUAGE = "nb"
 
 
@@ -48,7 +50,9 @@ async def create_app() -> web.Application:
 
     async def app_context(app: Any) -> Any:
         # Set up context:
+        app["SERVER_ROOT"] = SERVER_ROOT
         app["DATA_ROOT"] = DATA_ROOT
+        app["STATIC_ROOT"] = STATIC_ROOT
         app["DEFAULT_LANGUAGE"] = DEFAULT_LANGUAGE
 
         yield

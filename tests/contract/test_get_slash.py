@@ -3,32 +3,35 @@ from typing import Any
 
 from aiohttp import ClientSession, hdrs
 import pytest
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.common.by import By
 
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_get_slash(http_service: Any) -> None:
+async def test_get_slash(http_service: Any, chrome_service: Any) -> None:
     """Should return 200 OK and a html-document."""
     url = f"{http_service}/"
 
-    expected_body = (
-        "<!doctype html>"
-        '<html lang="nb">'
-        "<title>Ontologi-typer</title>"
-        "<body>"
-        "<p>Typer</p>"
-        '<p> - <a href="contract-test">contract-test</a></p>'
-        '<p> - <a href="examples">examples</a></p>'
-    )
+    options = ChromeOptions()
+    options.headless = True
 
-    async with ClientSession() as session:
-        async with session.get(url) as response:
-            body = await response.text()
+    driver = webdriver.Chrome(
+        service=chrome_service, options=options
+    )  # pytype: disable=wrong-keyword-args
 
-    assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
-    assert body == expected_body
+    driver.get(url)
+
+    assert driver.title == "Ontologi-typer"
+    elements = driver.find_elements(By.TAG_NAME, "p")
+    assert len(elements) == 2
+    assert elements[0].text == "Typer"
+    assert elements[1].text == "- contract-test"
+    href = elements[1].find_element(By.CSS_SELECTOR, "a[href=contract-test]")
+    assert href.text == "contract-test"
+
+    driver.quit()
 
 
 @pytest.mark.contract

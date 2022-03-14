@@ -73,6 +73,7 @@ async def generate_html_document(ontology_type: str, ontologies: List[str]) -> s
         html_statements.append(
             f'<p> - <a href="{ontology_type}/{ontology}">{ontology}</a></p>'
         )
+    html_statements.append("</body>")
 
     # Concatenates all the statments into a string:
     return "".join(html_statements)

@@ -11,10 +11,18 @@ import pytest
 async def ontology_to_be_deleted(http_service: Any) -> None:
     """Fixture to create the test-case."""
     # ARRANGE:
-    ontology_rdf_file = "tests/files/examples/hello-world/hello-world.ttl"
-    ontology_en_html_file = "tests/files/examples/hello-world/hello-world-en.html"
-    ontology_nb_html_file = "tests/files/examples/hello-world/hello-world-nb.html"
-    ontology_nn_html_file = "tests/files/examples/hello-world/hello-world-nn.html"
+    ontology_rdf_file = (
+        "tests/files/workspace/data/contract-test/hello-world/hello-world.ttl"
+    )
+    ontology_en_html_file = (
+        "tests/files/workspace/data/contract-test/hello-world/hello-world-en.html"
+    )
+    ontology_nb_html_file = (
+        "tests/files/workspace/data/contract-test/hello-world/hello-world-nb.html"
+    )
+    ontology_nn_html_file = (
+        "tests/files/workspace/data/contract-test/hello-world/hello-world-nn.html"
+    )
 
     with MultipartWriter("mixed") as mpwriter:
         # add the RDF-representation

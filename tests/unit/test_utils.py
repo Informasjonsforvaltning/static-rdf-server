@@ -2,7 +2,7 @@
 import pytest
 
 from static_rdf_server.utils import (
-    ContentTypeNotSupported,
+    ContentTypeNotSupportedException,
     decide_content_and_extension,
 )
 
@@ -98,5 +98,5 @@ async def test_decide_content_type_and_extension_not_supported() -> None:
     accept_header = "not/supported"
     accept_language_header = ""
 
-    with pytest.raises(ContentTypeNotSupported):
+    with pytest.raises(ContentTypeNotSupportedException):
         await decide_content_and_extension(accept_header, accept_language_header)

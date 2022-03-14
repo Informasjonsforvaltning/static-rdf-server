@@ -10,7 +10,7 @@ async def test_get_rdf_turtle(client: Any, fs: Any) -> None:
     """Should return status 200 OK and RDF as turtle."""
     contents = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.ttl",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.ttl",
         contents=contents,
     )
 
@@ -36,7 +36,7 @@ async def test_get_html_default_language(client: Any, fs: Any) -> None:
         <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-nb.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
         contents=contents,
     )
 
@@ -66,7 +66,7 @@ async def test_get_default(client: Any, fs: Any) -> None:
         <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-nb.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
         contents=contents,
     )
 
@@ -93,7 +93,7 @@ async def test_get_html_nb_language(client: Any, fs: Any) -> None:
         <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-nb.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
         contents=contents,
     )
 
@@ -122,7 +122,7 @@ async def test_get_html_nn_language(client: Any, fs: Any) -> None:
         <p>Denne helsinga vart sist oppdatert 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-nn.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nn.html",
         contents=contents,
     )
 
@@ -151,7 +151,7 @@ async def test_get_html_en_language(client: Any, fs: Any) -> None:
         <p>This greeting was last updated 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-en.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
         contents=contents,
     )
 
@@ -172,7 +172,7 @@ async def test_get_accept_not_acceptable(client: Any, fs: Any) -> None:
     """Should return status 406 Not Acceptable."""
     contents = '<p>Server says "Hello, world!"</p>'
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.html",
         contents=contents,
     )
 
@@ -187,7 +187,7 @@ async def test_representation_not_found(client: Any, fs: Any) -> None:
     """Should return status 406 Not Acceptable."""
     contents = '<p>Server says "Hello, world!"</p>'
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.json",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.json",
         contents=contents,
     )
 
@@ -201,7 +201,7 @@ async def test_representation_not_found(client: Any, fs: Any) -> None:
 async def test_get_ontology_not_found(client: Any, fs: Any) -> None:
     """Should return status 404 Not Found."""
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.ttl"
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.ttl"
     )
 
     headers = {hdrs.ACCEPT: "text/turtle"}
@@ -225,7 +225,7 @@ async def test_get_html_en_language_when_en_does_not_exist(
         <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-nb.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
         contents=contents,
     )
 
@@ -256,7 +256,7 @@ async def test_get_html_nn_language_when_nn_does_not_exist(
         <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
     """
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1-nb.html",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
         contents=contents,
     )
 

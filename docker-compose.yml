@@ -3,10 +3,18 @@ services:
   static-rdf-server:
     build: .
     image: eu.gcr.io/digdir-fdk-infra/static-rdf-server:test
-    ports:
-      - 8080:8080
+    expose:
+      - 5000
     environment:
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - API_KEY=${API_KEY}
     volumes:
-      - ./tests/files/:/srv/www/static-rdf-server/
+      - ./tests/files/workspace/:/srv/www/static-rdf-server/
+  static-rdf-nginx:
+    build: nginx/.
+    ports:
+      - 8080:8080
+    volumes:
+      - ./tests/files/workspace/:/srv/www/static-rdf-server/
+    depends_on:
+      - static-rdf-server

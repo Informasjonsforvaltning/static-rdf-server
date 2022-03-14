@@ -11,7 +11,7 @@ from pythonjsonlogger import jsonlogger
 
 load_dotenv()
 
-HOST_PORT = env.get("HOST_PORT", "8080")
+HOST_PORT = env.get("HOST_PORT", "5000")
 DEBUG_MODE = env.get("DEBUG_MODE", False)
 LOGGING_LEVEL = env.get("LOGGING_LEVEL", "INFO")
 
@@ -22,7 +22,7 @@ threads = 2 * multiprocessing.cpu_count()
 logging_level = str(LOGGING_LEVEL)
 accesslog = "-"
 
-# Need to override the logger to remove healthcheck (ping) form accesslog
+# Need to override the logger to remove healthcheck (ping) from accesslog
 
 
 class StackdriverJsonFormatter(jsonlogger.JsonFormatter, object):

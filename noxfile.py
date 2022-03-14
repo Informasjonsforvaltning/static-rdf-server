@@ -29,6 +29,8 @@ def unit_tests(session: Session) -> None:
         "pytest",
         "pytest-asyncio",
         "requests",
+        "selenium",
+        "webdriver-manager",
     )
     session.run(
         "pytest",
@@ -50,13 +52,20 @@ def integration_tests(session: Session) -> None:
         "pytest-aiohttp",
         "pyfakefs",
         "requests",
+        "selenium",
+        "webdriver-manager",
     )
     session.run(
         "pytest",
         "-m integration",
         "-rF",
         *args,
-        env={"LOGGING_LEVEL": "DEBUG", "DATA_ROOT": "/srv/www/static-rdf-server"},
+        env={
+            "LOGGING_LEVEL": "DEBUG",
+            "SERVER_ROOT": "/srv/www/static-rdf-server",
+            "DATA_ROOT": "/srv/www/static-rdf-server/data",
+            "STATIC_ROOT": "/srv/www/static-rdf-server/static",
+        },
     )
 
 
@@ -70,6 +79,8 @@ def contract_tests(session: Session) -> None:
         "pytest-docker",
         "pytest-aiohttp",
         "requests",
+        "selenium",
+        "webdriver-manager",
     )
     session.run(
         "pytest",

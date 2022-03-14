@@ -31,6 +31,9 @@ async def generate_html_document(ontology_types: List[str]) -> str:
     """Based on list of ontologies, generate a html-document."""
     html_statements: List[str] = []
 
+    # Sort the list alphabetically:
+    ontology_types.sort()
+
     # Generate the statements:
     html_statements.append("<!doctype html>")
     html_statements.append('<html lang="nb">')
@@ -41,6 +44,7 @@ async def generate_html_document(ontology_types: List[str]) -> str:
         html_statements.append(
             f'<p> - <a href="{ontology_type}">{ontology_type}</a></p>'
         )
+    html_statements.append("</body>")
 
     # Concatenates all the statments into a string:
     return "".join(html_statements)

@@ -9,7 +9,7 @@ import pytest
 @pytest.mark.integration
 async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -> None:
     """Should return status 201 Created and location header."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -27,11 +27,23 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
         html_file,
         contents=html_content,
     )
+    image_file = os.path.join("images", f"{ontology}.png")
+    fs.create_file(
+        image_file,
+    )
+    pdf_file = os.path.join("files", f"{ontology}.pdf")
+    fs.create_file(
+        pdf_file,
+    )
 
     with open(rdf_file, "rb") as file:
         ontology_rdf = file.read()
     with open(html_file, "rb") as file:
         ontology_html = file.read()
+    with open(image_file, "rb") as file:
+        ontology_png = file.read()
+    with open(pdf_file, "rb") as file:
+        ontology_pdf = file.read()
 
     with MultipartWriter("mixed") as mpwriter:
         # add the RDF-representation
@@ -51,6 +63,22 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
         )
         p.headers[hdrs.CONTENT_TYPE] = "text/html"
         p.headers[hdrs.CONTENT_LANGUAGE] = "en"
+        # add an image:
+        p = mpwriter.append(ontology_png)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-png-file",
+            filename=image_file,
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "image/png"
+        # add a pdf file
+        p = mpwriter.append(ontology_pdf)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-pdf-file",
+            filename=pdf_file,
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "application/pdf"
 
     headers = {
         "X-API-KEY": os.getenv("API_KEY", None),
@@ -66,7 +94,7 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
 @pytest.mark.integration
 async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> None:
     """Should return status 204 No Content."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -81,7 +109,18 @@ async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> No
     html_file = (
         f'/srv/www/static-rdf-server"/{ontology_type}/{ontology}/{ontology}.html'
     )
-    html_content = '<p>Server says "Hello, world!"</p>'
+    html_content = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-08 14:49:40.</p>
+        <img src="images/hello-world.png" alt="Hello World">
+        <a href="files/hello-world-en.pdf" download="hello-world-en.pdf">Download the pdf</a>
+    """
+
     fs.create_file(
         html_file,
         contents=html_content,
@@ -127,7 +166,7 @@ async def test_put_ontology_when_ontology_type_does_not_exist(
     client: Any, fs: Any
 ) -> None:
     """Should return status 404 Not Found."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -185,7 +224,7 @@ async def test_put_ontology_when_when_content_language_header_is_not_given(
     client: Any, fs: Any
 ) -> None:
     """Should return status 400 Bad Request."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -226,7 +265,7 @@ async def test_put_ontology_when_when_content_language_header_is_not_given(
 @pytest.mark.integration
 async def test_put_ontology_file_not_readable(client: Any, fs: Any) -> None:
     """Should return status 400 Bad Request."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -258,13 +297,13 @@ async def test_put_ontology_file_not_readable(client: Any, fs: Any) -> None:
 
     assert response.status == 400
     body = await response.json()
-    assert f'Ontology file "{ontology}.ttl" could not be read.' == body["detail"]
+    assert f'Ontology file "{ontology}.ttl" has not valid content:' in body["detail"]
 
 
 @pytest.mark.integration
 async def test_put_ontology_not_valid_extension(client: Any, fs: Any) -> None:
     """Should return status 400 Bad Request."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -299,13 +338,13 @@ async def test_put_ontology_not_valid_extension(client: Any, fs: Any) -> None:
     )
     assert response.status == 400
     body = await response.json()
-    assert f"Not valid file-extension {not_valid_extension}." == body["detail"]
+    assert f"Not supported file-extension {not_valid_extension}." == body["detail"]
 
 
 @pytest.mark.integration
 async def test_put_ontology_rdf_file_not_parsable(client: Any, fs: Any) -> None:
     """Should return status 400 Bad Request."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -338,13 +377,13 @@ async def test_put_ontology_rdf_file_not_parsable(client: Any, fs: Any) -> None:
 
     assert response.status == 400
     body = await response.json()
-    assert f'Ontology file "{ontology}.ttl" could not be parsed.' == body["detail"]
+    assert f'Ontology file "{ontology}.ttl" has not valid content:' in body["detail"]
 
 
 @pytest.mark.integration
 async def test_post_ontology_no_api_key(client: Any, fs: Any) -> None:
     """Should return status 403 Forbidden."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -394,7 +433,7 @@ async def test_put_ontology_when_content_type_is_not_supported(
     client: Any, fs: Any
 ) -> None:
     """Should return status 415 Unsupported Media Type."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 
@@ -439,7 +478,7 @@ async def test_put_ontology_when_when_content_type_header_is_not_given(
     client: Any, fs: Any
 ) -> None:
     """Should return status 400 Bad Request."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
     ontology = "hello-world"
 

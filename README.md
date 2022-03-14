@@ -56,32 +56,48 @@ This directory on the server will be structured as follows:
 static-rdf-server
 ├── ontology-type-1
 │  ├── ontology-1
-│  │   ├── ontology-1.ttl 
+│  │   ├── files
+│  │   |  ├── ontology-1.ttl
+│  │   │  └── ontology-1.pdf
+│  │   ├── images
+│  │   |  └── image-1.png
 │  │   ├── ontology-1-en.html 
 │  │   ├── ontology-1-nb.html 
 │  │   └── ontology-1-nn.html
 │  ├── ontology_2
-│  │   └── ontology-2.ttl 
+│  │   ├── files
+│  │   |  ├── ontology-2.ttl
+│  │   │  └── ontology-2.pdf
+│  │   ├── images
+│  │   |  └── image-2.png
 │  │   ├── ontology-2-en.html 
 │  │   ├── ontology-2-nb.html 
 │  │   └── ontology-2-nn.html
 │  └── index.html
 ├── ontology-type-2
-|  ├── ontology-3
-|  │   ├── ontology-3.ttl 
-|  │   ├── ontology-3-en.html 
-|  │   ├── ontology-3-nb.html 
-|  │   └── ontology-3-nn.html
-|  ├── ontology-4
-|  │   ├── ontology-4.ttl 
-|  │   ├── ontology-4-en.html 
-|  │   ├── ontology-4-nb.html 
-|  │   └── ontology-4-nn.html
+│  ├── ontology_3
+│  │   ├── files
+│  │   |  ├── ontology-3.ttl
+│  │   │  └── ontology-3.pdf
+│  │   ├── images
+│  │   |  └── image-3.png
+│  │   ├── ontology-3-en.html 
+│  │   ├── ontology-3-nb.html 
+│  │   └── ontology-3-nn.html
+│  ├── ontology_4
+│  │   ├── files
+│  │   |  ├── ontology-4.ttl
+│  │   │  └── ontology-4.pdf
+│  │   ├── images
+│  │   |  └── image-4.png
+│  │   ├── ontology-4-en.html 
+│  │   ├── ontology-4-nb.html
+│  │   └── ontology-4-nn.html
 |  └── index.html
 └── index.html
 ```
 
-The static files to be served should be store under `/srv/www/static-rdf-server`.
+The static files to be served should be store under `/srv/www/static-rdf-server/static`.
 
 ## Run locally
 

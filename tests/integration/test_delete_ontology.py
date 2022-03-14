@@ -10,7 +10,11 @@ async def test_delete_ontology(client: Any, fs: Any) -> None:
     """Should return status 204."""
     contents = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.ttl",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.ttl",
+        contents=contents,
+    )
+    fs.create_file(
+        "/srv/www/static-rdf-server/static/ontology-type-1/ontology-1/ontology-1.static",
         contents=contents,
     )
     headers = {
@@ -26,7 +30,7 @@ async def test_delete_ontology_not_found(client: Any, fs: Any) -> None:
     """Should return status 404."""
     contents = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.ttl",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.ttl",
         contents=contents,
     )
 
@@ -45,7 +49,7 @@ async def test_delete_ontology_no_api_key(client: Any, fs: Any) -> None:
     """Should return status 403 Forbidden."""
     contents = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
     fs.create_file(
-        "/srv/www/static-rdf-server/ontology-type-1/ontology-1/ontology-1.ttl",
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.ttl",
         contents=contents,
     )
 

@@ -9,7 +9,7 @@ import pytest
 @pytest.mark.integration
 async def test_put_ontology_type_when_type_does_exist(client: Any, fs: Any) -> None:
     """Should return status 204 Created and location header."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
 
     fs.create_dir(f"{data_root}/{ontology_type}")
@@ -26,7 +26,7 @@ async def test_put_ontology_type_when_type_does_exist(client: Any, fs: Any) -> N
 @pytest.mark.integration
 async def test_put_ontology_type_when_type_does_not_exist(client: Any, fs: Any) -> None:
     """Should return status 201 Created and location header."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
 
     fs.create_dir(f"{data_root}")
@@ -43,7 +43,7 @@ async def test_put_ontology_type_when_type_does_not_exist(client: Any, fs: Any) 
 @pytest.mark.integration
 async def test_put_ontology_type_no_api_key(client: Any, fs: Any) -> None:
     """Should return status 403 Forbidden."""
-    data_root = "/srv/www/static-rdf-server"
+    data_root = "/srv/www/static-rdf-server/data"
     ontology_type = "examples"
 
     fs.create_dir(f"{data_root}/{ontology_type}")
