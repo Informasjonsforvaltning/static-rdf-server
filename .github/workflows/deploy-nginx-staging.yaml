@@ -1,14 +1,16 @@
-name: Deploy to production
+name: Deploy static-rdf-nginx to staging
 
 on:
-  push:
+  pull_request:
+    types: [ready_for_review, opened, reopened, synchronize]
     branches:
       - main
 
 jobs:
   build-and-deploy:
-    name: Build, test, publish and deploy to production environment on merge to main branch
+    name: Build, test, publish and deploy to staging environment
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
 
     steps:
       - name: Checkout
@@ -38,10 +40,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: eu.gcr.io/digdir-fdk-infra/static-rdf-server
+          images: eu.gcr.io/digdir-fdk-infra/static-rdf-nginx
           flavor: |
-            latest=true
+            latest=false
           tags: |
+            type=raw,value=staging_latest
             type=raw,value=${{ github.sha }},priority=1000
             type=ref,event=branch
 
@@ -58,8 +61,8 @@ jobs:
           pipx install --pip-args=--constraint=.github/workflows/constraints.txt nox
           pipx inject --pip-args=--constraint=.github/workflows/constraints.txt nox nox-poetry
 
-      - name: Run tests with nox
-        run: nox
+      - name: Run contract-tests with nox
+        run: nox -s contract_tests
         env:
           API_KEY: ${{ secrets.API_KEY }}
 
@@ -67,8 +70,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ./
-          file: ./Dockerfile
+          context: ./nginx/
+          file: ./nginx/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -80,25 +83,25 @@ jobs:
       - name: Apply Helm template
         run: |
           helm repo add fdk https://informasjonsforvaltning.github.io/helm-chart/
-          helm fetch --untar --untardir ./helm fdk/static-rdf-server
-          helm template --set DOCKER_IMAGE_NAME="eu.gcr.io/digdir-fdk-infra/static-rdf-server:${{ steps.meta.outputs.version }}" \
-          -f ./helm/static-rdf-server/values/prod.yaml \
-          ./helm/static-rdf-server/ > ./kubectlapply.yaml
+          helm fetch --untar --untardir ./helm fdk/static-rdf-nginx
+          helm template --set DOCKER_IMAGE_NAME="eu.gcr.io/digdir-fdk-infra/static-rdf-nginx:${{ steps.meta.outputs.version }}" \
+          -f ./helm/static-rdf-nginx/values/staging.yaml \
+          ./helm/static-rdf-nginx/ > ./kubectlapply.yaml
           chmod o+w ./kubectlapply.yaml
           cat kubectlapply.yaml
 
       - name: Setup gcloud CLI for deploy
         uses: google-github-actions/auth@v0
         with:
-          credentials_json: ${{ secrets.DIGDIR_FDK_PROD_AUTODEPLOY }}
+          credentials_json: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
 
       - name: Deploy to GCP & check status
         run: |
-          gcloud container clusters get-credentials digdir-fdk-prod --region europe-north1-a --project digdir-fdk-prod
+          gcloud container clusters get-credentials digdir-fdk-dev --region europe-north1-a --project digdir-fdk-dev
           kubectl apply -f ./kubectlapply.yaml --force
-          if ! kubectl --namespace=prod rollout status deployment static-rdf-server; then
-            kubectl --namespace=prod rollout undo deployment static-rdf-server
-            kubectl --namespace=prod rollout status deployment static-rdf-server
+          if ! kubectl --namespace=staging rollout status deployment static-rdf-nginx; then
+            kubectl --namespace=staging rollout undo deployment static-rdf-nginx
+            kubectl --namespace=staging rollout status deployment static-rdf-nginx
             exit 1
           fi
 
@@ -106,16 +109,9 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: "Application: static-rdf-server | Environment: prod"
+          author_name: "Application: static-rdf-nginx | Environment: staging"
           fields: commit,author,workflow
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: always()
-
-      - name: Trigger deploy to demo
-        uses: peter-evans/repository-dispatch@main
-        with:
-          token: ${{ secrets.DISPATCH_TOKEN }}
-          event-type: deploy-demo
-          client-payload: '{"sha": "${{ github.sha }}"}'

@@ -2,13 +2,17 @@
 import logging
 import os
 import shutil
+from typing import List
+from urllib.parse import unquote
 
 from aiohttp import hdrs, web
 from multidict import MultiDict
 
 from static_rdf_server.utils import (
-    ContentTypeNotSupported,
+    ContentTypeNotSupportedException,
     decide_content_and_extension,
+    NotValidFileContentException,
+    rewrite_links,
     valid_content_type,
     valid_file_content,
     valid_file_extension,
@@ -18,6 +22,7 @@ from static_rdf_server.utils import (
 async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
     """Process and store files."""
     data_root = request.app["DATA_ROOT"]
+    static_root = request.app["STATIC_ROOT"]
     api_key = request.headers.get("X-API-KEY", None)
     if not api_key or os.getenv("API_KEY", None) != api_key:
         raise web.HTTPForbidden()
@@ -31,7 +36,6 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         ) from None
 
     ontology = request.match_info["ontology"]
-    content_language: str = ""
     extension: str
     logging.debug(f"Got put request{ontology_type}/{ontology}.")
 
@@ -45,6 +49,7 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
     # Processing parts:
     async for part in (await request.multipart()):
         logging.debug(f"part.name {part.name}.")
+        content_language: str = ""
 
         # Validate headers:
         try:
@@ -71,26 +76,50 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             extension = part.filename.split(".")[-1]
             if not (await valid_file_extension(extension)):
                 raise web.HTTPBadRequest(
-                    reason=f"Not valid file-extension {extension}."
+                    reason=f"Not supported file-extension {extension}."
                 )
 
         # Read the file:
         try:
-            ontology_file = (await part.read()).decode()
-        except ValueError:
+            ontology_file = await part.read(decode=False)
+        except ValueError:  # pragma: no cover
             raise web.HTTPBadRequest(
                 reason=f'Ontology file "{part.filename}" could not be read.'
             ) from None
-        logging.debug(f"Got ontology-file: {ontology_file}.")
 
         # Check the content of the file:
-        if not (await valid_file_content(extension, ontology_file)):
+        ontology_file_decoded: bytes
+        try:
+            ontology_file_decoded = part.decode(ontology_file)
+            await valid_file_content(extension, ontology_file_decoded)
+        except NotValidFileContentException as e:
             raise web.HTTPBadRequest(
-                reason=f'Ontology file "{part.filename}" could not be parsed.'
+                reason=f'Ontology file "{part.filename}" has not valid content: {str(e)}.'
+            ) from e
+
+        # For html-files We need to rewrite links to sub-folders:
+        if "text/html" in part.headers[hdrs.CONTENT_TYPE]:
+            ontology_file_decoded = await rewrite_links(
+                ontology_file_decoded, data_root, ontology_type, ontology
             )
 
-        # Create destination folders:
-        destination = os.path.join(data_root, ontology_type, ontology)
+        # Decide and create destination folder:
+        if extension in ["html", "ttl"]:
+            destination = os.path.join(data_root, ontology_type, ontology)
+        else:
+            destination = os.path.join(static_root, ontology_type, ontology)
+        if not os.path.exists(destination):
+            os.makedirs(destination)
+
+        # Decide sub-folders:
+        sub_folders: List[str]
+        if part.filename:
+            _filename = unquote(part.filename)
+            sub_folders = _filename.split(os.sep)
+            for folder in sub_folders[:-1]:
+                destination = os.path.join(destination, folder)
+
+        # Create sub-folders:
         if not os.path.exists(destination):
             os.makedirs(destination)
 
@@ -104,8 +133,8 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         # Write file to path:
         path = os.path.join(destination, filename)
         logging.debug(f"Writing to path: {path}.")
-        with open(path, "w") as file:
-            file.write(ontology_file)
+        with open(path, "wb") as file:
+            file.write(ontology_file_decoded)
     if status_code == 201:
         headers = MultiDict([(hdrs.LOCATION, f"{ontology_type}/{ontology}")])
     else:
@@ -120,7 +149,7 @@ async def get_ontology(request: web.Request) -> web.Response:
     ontology_type = request.match_info["ontology_type"]
     ontology = request.match_info["ontology"]
 
-    logging.debug(f"Got request for folder/file {ontology_type}/{ontology}")
+    logging.debug(f"Got request for type/folder/file {ontology_type}/{ontology}")
 
     # First we check if the ontology exist:
     ontology_path = os.path.join(data_root, ontology_type, ontology)
@@ -134,7 +163,7 @@ async def get_ontology(request: web.Request) -> web.Response:
             request.headers.get(hdrs.ACCEPT),
             request.headers.get(hdrs.ACCEPT_LANGUAGE),
         )
-    except ContentTypeNotSupported as e:
+    except ContentTypeNotSupportedException as e:
         raise web.HTTPNotAcceptable(reason=str(e)) from e
 
     # We finally try to get the corresponding representation:
@@ -176,6 +205,8 @@ async def delete_ontology(request: web.Request) -> web.Response:
         raise web.HTTPForbidden()
 
     data_root = request.app["DATA_ROOT"]
+    static_root = request.app["STATIC_ROOT"]
+
     ontology_type = request.match_info["ontology_type"]
     ontology = request.match_info["ontology"]
 
@@ -189,5 +220,10 @@ async def delete_ontology(request: web.Request) -> web.Response:
         raise web.HTTPNotFound()
 
     shutil.rmtree(ontology_path)
+
+    # We also need to remove static files, if they exist:
+    static_path = os.path.join(static_root, ontology_type, ontology)
+    if os.path.exists(static_path):
+        shutil.rmtree(static_path)
 
     return web.Response(status=204)

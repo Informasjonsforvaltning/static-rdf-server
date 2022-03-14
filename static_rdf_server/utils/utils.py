@@ -5,8 +5,14 @@ from rdflib import Graph
 from rdflib.exceptions import ParserError
 
 
-class ContentTypeNotSupported(Exception):
+class ContentTypeNotSupportedException(Exception):
     """Class representing the content-type not supported exception."""
+
+    pass
+
+
+class NotValidFileContentException(Exception):
+    """Class representing the not valid file content exception."""
 
     pass
 
@@ -31,7 +37,7 @@ async def decide_content_and_extension(
         elif "*/*" in accept_header:
             pass
         else:
-            raise ContentTypeNotSupported(
+            raise ContentTypeNotSupportedException(
                 f"None of the content-types in {accept_header} are supported."
             )
     else:
@@ -52,22 +58,18 @@ async def decide_content_and_extension(
     return (content_type, content_language, extension)
 
 
-async def valid_file_content(file_extension: str, file_content: Any) -> bool:
-    """Return True if file-conent is valid."""
-    if "html" == file_extension:
-        pass
-    else:
+async def valid_file_content(file_extension: str, file_content: Any) -> None:
+    """Return True if file-content is valid."""
+    if "ttl" == file_extension:
         try:
             Graph().parse(data=file_content)
-        except (ParserError, SyntaxError):
-            return False
-
-    return True
+        except (ParserError, SyntaxError, UnicodeDecodeError) as e:
+            raise NotValidFileContentException(str(e)) from e
 
 
 async def valid_file_extension(file_extension: str) -> bool:
     """Return True if valid file-extension."""
-    if file_extension.lower() in ["ttl", "html"]:
+    if file_extension.lower() in ["ttl", "html", "png", "pdf"]:
         return True
 
     return False
@@ -75,7 +77,22 @@ async def valid_file_extension(file_extension: str) -> bool:
 
 async def valid_content_type(content_type: str) -> bool:
     """Return True if supported content-type."""
-    if content_type.lower() in ["text/turtle", "text/html"]:
+    if content_type.lower() in [
+        "text/turtle",
+        "text/html",
+        "application/pdf",
+        "image/png",
+    ]:
         return True
 
     return False
+
+
+async def rewrite_links(
+    html_file: bytes, data_root: str, ontology_type: str, ontology: str
+) -> bytes:
+    """Rewrite relative links as absolute paths and return file."""
+    _html_str = html_file.decode("utf-8")
+    html_str = _html_str.replace("images", ontology + "/images")
+    html_str = html_str.replace("files", ontology + "/files")
+    return html_str.encode("utf-8")

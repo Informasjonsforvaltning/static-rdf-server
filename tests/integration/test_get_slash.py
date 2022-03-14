@@ -15,10 +15,11 @@ async def test_get_slash(client: Any, fs: Any) -> None:
         "<body>"
         "<p>Typer</p>"
         '<p> - <a href="examples">examples</a></p>'
+        "</body>"
     )
 
     ontology_type = "examples"
-    fs.create_dir(f"/srv/www/static-rdf-server/{ontology_type}")
+    fs.create_dir(f"/srv/www/static-rdf-server/data/{ontology_type}")
 
     headers = {hdrs.ACCEPT: "text/html"}
     response = await client.get("/", headers=headers)
@@ -34,7 +35,7 @@ async def test_get_slash(client: Any, fs: Any) -> None:
 @pytest.mark.integration
 async def test_get_slash_ask_for_turtle(client: Any, fs: Any) -> None:
     """Should return status 406 Not Acceptable."""
-    fs.create_dir("/srv/www/static-rdf-server/examples")
+    fs.create_dir("/srv/www/static-rdf-server/data/examples")
 
     headers = {hdrs.ACCEPT: "text/turtle"}
     response = await client.get("/", headers=headers)

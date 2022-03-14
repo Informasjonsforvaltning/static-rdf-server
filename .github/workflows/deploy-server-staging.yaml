@@ -1,4 +1,4 @@
-name: Deploy to staging
+name: Deploy static-rdf-server to staging
 
 on:
   pull_request:
@@ -56,9 +56,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pipx install poetry==1.1.11
-          pipx install nox==2021.10.1
-          pipx inject nox nox-poetry
+          pip install --constraint=.github/workflows/constraints.txt pip
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt nox
+          pipx inject --pip-args=--constraint=.github/workflows/constraints.txt nox nox-poetry
 
       - name: Run tests with nox
         run: nox

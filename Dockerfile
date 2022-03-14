@@ -21,7 +21,7 @@ ADD static_rdf_server /app/static_rdf_server
 # somewhere and never written in case the python application crashes.
 ENV PYTHONUNBUFFERED 1
 
-EXPOSE 8080
+EXPOSE 5000
 
 
 CMD gunicorn "static_rdf_server:create_app"  --config=static_rdf_server/gunicorn_config.py --worker-class aiohttp.GunicornWebWorker

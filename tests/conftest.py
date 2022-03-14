@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 import pytest
 import requests
 from requests.exceptions import ConnectionError
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 
 from static_rdf_server import create_app
 
@@ -38,10 +40,19 @@ def is_responsive(url: Any) -> Any:
 
 @pytest.mark.contract
 @pytest.fixture(scope="session")
+def chrome_service() -> Any:
+    """A selenium driver instance."""
+    chrome_service = ChromeService(executable_path=ChromeDriverManager().install())
+
+    return chrome_service
+
+
+@pytest.mark.contract
+@pytest.fixture(scope="session")
 def http_service(docker_ip: Any, docker_services: Any) -> Any:
     """Ensure that HTTP service is up and responsive."""
     # `port_for` takes a container port and returns the corresponding host port
-    port = docker_services.port_for("static-rdf-server", HOST_PORT)
+    port = docker_services.port_for("static-rdf-nginx", HOST_PORT)
     url = "http://{}:{}".format(docker_ip, port)
     docker_services.wait_until_responsive(
         timeout=30.0, pause=0.1, check=lambda: is_responsive(url)

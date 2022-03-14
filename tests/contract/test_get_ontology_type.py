@@ -1,32 +1,40 @@
 """Contract test cases for ontology-type."""
 from typing import Any
 
-from aiohttp import ClientSession, hdrs
 import pytest
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.common.by import By
 
 
 @pytest.mark.contract
 @pytest.mark.asyncio
-async def test_get_ontology_type(http_service: Any) -> None:
+async def test_get_ontology_type(http_service: Any, chrome_service: Any) -> None:
     """Should return 200 OK and a html-document with a list of ontologies for the given type."""
-    expected_body = (
-        "<!doctype html>"
-        '<html lang="en">'
-        "<title>Contract-Test</title>"
-        "<body>"
-        "<p><b>Contract-Test</b></p>"
-        '<p> - <a href="contract-test/hello-world">hello-world</a></p>'
-        '<p> - <a href="contract-test/hello-world-to-be-deleted">hello-world-to-be-deleted</a></p>'
-    )
-
     url = f"{http_service}/contract-test"
 
-    async with ClientSession() as session:
-        async with session.get(url) as response:
-            text = await response.text()
+    options = ChromeOptions()
+    options.headless = True
 
-    assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+    driver = webdriver.Chrome(
+        service=chrome_service, options=options
+    )  # pytype: disable=wrong-keyword-args
 
-    assert text == expected_body
+    driver.get(url)
+
+    assert driver.title == "Contract-Test"
+    elements = driver.find_elements(By.TAG_NAME, "p")
+    assert len(elements) == 3
+    assert elements[0].text == "Contract-Test"
+    assert elements[1].text == "- hello-world"
+    href = elements[1].find_element(
+        By.CSS_SELECTOR, 'a[href="contract-test/hello-world"]'
+    )
+    assert href.text == "hello-world"
+    assert elements[2].text == "- hello-world-to-be-deleted"
+    href = elements[2].find_element(
+        By.CSS_SELECTOR, 'a[href="contract-test/hello-world-to-be-deleted"]'
+    )
+    assert href.text == "hello-world-to-be-deleted"
+
+    driver.quit()
