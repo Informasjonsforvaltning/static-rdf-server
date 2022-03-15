@@ -20,7 +20,6 @@ jobs:
       python_architecture: x64
       environment: staging
       cluster: digdir-fdk-dev
-      nox_image: True
       nox_secret: True
       nox_cmd: '-s contract_tests'
     secrets:
