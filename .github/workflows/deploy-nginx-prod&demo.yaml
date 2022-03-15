@@ -21,6 +21,8 @@ jobs:
       cluster: digdir-fdk-prod
       nox_secret: True
       nox_cmd: '-s contract_tests'
+      dockerfile_context: ./nginx/
+      dockerfile: ./nginx/Dockerfile
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
