@@ -123,12 +123,16 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         if not os.path.exists(destination):
             os.makedirs(destination)
 
-        # Create filename:
+        # For html and RDF create filename:
         filename: str
-        if len(content_language) > 0:
-            filename = f"{ontology}-{content_language}.{extension}"
+        if part.filename and extension not in ["html", "ttl"]:
+            _filename = unquote(part.filename)
+            filename = _filename.split(os.sep)[-1]
         else:
-            filename = f"{ontology}.{extension}"
+            if len(content_language) > 0:
+                filename = f"{ontology}-{content_language}.{extension}"
+            else:
+                filename = f"{ontology}.{extension}"
 
         # Write file to path:
         path = os.path.join(destination, filename)
@@ -179,7 +183,6 @@ async def get_ontology(request: web.Request) -> web.Response:
     if os.path.exists(full_path):
         with open(full_path, "r") as f:
             body = f.read()
-            logging.debug(f"Is about to return body: {body}")
         headers = MultiDict([(hdrs.CONTENT_LANGUAGE, content_language)])
         return web.Response(text=body, headers=headers, content_type=content_type)
 
