@@ -39,7 +39,7 @@ If the ontology exists, it will be updated. Otherwise it will be created.
 ### To create a new type
 
 ```Shell
-% curl -H "Content-type: application/json" -X POST --data '{"type":"specification"}' http://localhost:8080
+% curl -H"X-API-KEY: supersecret" -H "Content-type: application/json" -X PUT --data '{"type":"specification"}' http://localhost:8080/specification
 ```
 
 ## Location of ontology files
