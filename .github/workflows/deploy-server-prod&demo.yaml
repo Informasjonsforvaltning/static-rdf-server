@@ -26,7 +26,7 @@ jobs:
       GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
       DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_PROD_AUTODEPLOY }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      API_KEY: ${{ secrets.API_KEY }}
+      API_KEY: 'super_secret_key'
 
   deploy-to-demo:
     needs: build-and-deploy-production
