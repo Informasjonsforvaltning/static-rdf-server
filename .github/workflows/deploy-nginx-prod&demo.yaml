@@ -21,7 +21,7 @@ jobs:
       cluster: digdir-fdk-prod
       nox_env: True
       nox_env_name: API_KEY
-      nox_env_value: 'super_secret_key'
+      nox_env_value: ${{ secrets.TEST_API_KEY }}
       nox_cmd: '-s contract_tests'
       dockerfile_context: ./nginx/
       dockerfile: ./nginx/Dockerfile

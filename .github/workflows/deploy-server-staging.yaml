@@ -23,7 +23,7 @@ jobs:
       nox_image: True
       nox_env: True
       nox_env_name: API_KEY
-      nox_env_value: 'super_secret_key'
+      nox_env_value: ${{ secrets.TEST_API_KEY }}
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
