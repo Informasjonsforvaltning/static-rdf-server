@@ -14,9 +14,11 @@ jobs:
       python_version: '3.9'
       python_architecture: x64
       sessions: integration_tests
+      nox_env: True
+      nox_env_name: API_KEY
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      API_KEY: ${{ secrets.API_KEY }}
+      NOX_ENV_VALUE: ${{ secrets.TEST_API_KEY }}
 
   build-and-deploy-staging:
     name: Call reusable workflow when pull request is created
