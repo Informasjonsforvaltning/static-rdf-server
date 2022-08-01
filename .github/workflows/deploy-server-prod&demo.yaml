@@ -22,7 +22,6 @@ jobs:
       nox_image: True
       nox_env: True
       nox_env_name: API_KEY
-      nox_env_value: ${{ secrets.TEST_API_KEY }}
       snapshot_disk: fdk-prod-static-rdf-server
       snapshot_name: autodeploy-prod-static-rdf-server
       snapshot_zone: europe-north1-a

@@ -7,6 +7,17 @@ on:
       - main
 
 jobs:
+  run-coverage:
+    name: Coverage
+    uses: Informasjonsforvaltning/workflows/.github/workflows/coverage-nox.yaml@main
+    with:
+      python_version: '3.9'
+      python_architecture: x64
+      sessions: integration_tests
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      API_KEY: ${{ secrets.API_KEY }}
+
   build-and-deploy-staging:
     name: Call reusable workflow when pull request is created
     if: github.event.pull_request.draft == false
