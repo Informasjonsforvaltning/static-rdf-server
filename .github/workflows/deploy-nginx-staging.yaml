@@ -10,7 +10,7 @@ jobs:
   build-and-deploy-staging:
     name: Call reusable workflow when pull request is created
     if: github.event.pull_request.draft == false
-    uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@debug
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@chore/hos/debug
     with:
       app_name: static-rdf-nginx
       python_version: '3.9'
