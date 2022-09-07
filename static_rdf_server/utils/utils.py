@@ -1,6 +1,12 @@
 """Module for util functions."""
-from typing import Any, Optional, Tuple
+from typing import Any, List, Tuple
 
+from content_negotiation import (
+    decide_content_type,
+    decide_language,
+    NoAgreeableContentTypeError,
+    NoAgreeableLanguageError,
+)
 from rdflib import Graph
 from rdflib.exceptions import ParserError
 
@@ -18,7 +24,10 @@ class NotValidFileContentException(Exception):
 
 
 async def decide_content_and_extension(
-    accept_header: Optional[str] = None, accept_language_header: Optional[str] = None
+    accept_header: List[str],
+    supported_content_types: List[str],
+    accept_language_header: List[str],
+    supported_languages: List[str],
 ) -> Tuple[str, str, str]:
     """Return content_language, content_type and extension based on request."""
     # Default content-type/content-language/extension:
@@ -27,30 +36,28 @@ async def decide_content_and_extension(
     extension: str = "html"
 
     # We inspect the accept-header:
-    if accept_header:
-        if "text/turtle" in accept_header:
-            content_type = "text/turtle"
-            content_language = ""
-            extension = "ttl"
-        elif "text/html" in accept_header:
-            pass
-        elif "*/*" in accept_header:
-            pass
-        else:
+    if len(accept_header) > 0:
+        try:
+            content_type = decide_content_type(accept_header, supported_content_types)
+            if content_type == "text/turtle":
+                extension = "ttl"
+            elif content_type == "text/html":
+                extension = "html"
+        except NoAgreeableContentTypeError as e:
             raise ContentTypeNotSupportedException(
                 f"None of the content-types in {accept_header} are supported."
-            )
+            ) from e
     else:
         pass  # pragma: no cover
 
     # for text/html, we inspect the accept-language-header:
     if content_type == "text/html":
-        if accept_language_header:
-            if "en" in accept_language_header:
-                content_language = "en"
-            elif "nn" in accept_language_header:
-                content_language = "nn"
-            else:
+        if len(accept_language_header) > 0:
+            try:
+                content_language = decide_language(
+                    accept_language_header, supported_languages
+                )
+            except NoAgreeableLanguageError:
                 content_language = "nb"
         else:
             pass

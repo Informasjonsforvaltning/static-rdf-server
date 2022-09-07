@@ -8,10 +8,10 @@ import pytest
 @pytest.mark.integration
 async def test_get_rdf_turtle(client: Any, fs: Any) -> None:
     """Should return status 200 OK and RDF as turtle."""
-    contents = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
+    contents_en = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.ttl",
-        contents=contents,
+        contents=contents_en,
     )
 
     headers = {hdrs.ACCEPT: "text/turtle"}
@@ -20,13 +20,13 @@ async def test_get_rdf_turtle(client: Any, fs: Any) -> None:
     assert response.status == 200
     assert "text/turtle" in response.headers[hdrs.CONTENT_TYPE]
     text = await response.text()
-    assert text == contents
+    assert text == contents_en
 
 
 @pytest.mark.integration
 async def test_get_html_default_language(client: Any, fs: Any) -> None:
     """Should return status 200 OK and body as html in language nb."""
-    contents = """
+    contents_nb = """
     <!doctype html>
     <html lang="nb">
     <title>Hallo verden</title>
@@ -37,7 +37,7 @@ async def test_get_html_default_language(client: Any, fs: Any) -> None:
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
-        contents=contents,
+        contents=contents_nb,
     )
 
     headers = {hdrs.ACCEPT: "text/html"}
@@ -50,13 +50,13 @@ async def test_get_html_default_language(client: Any, fs: Any) -> None:
     document = await response.text()
     assert '<html lang="nb">' in document
     text = await response.text()
-    assert text == contents
+    assert text == contents_nb
 
 
 @pytest.mark.integration
 async def test_get_default(client: Any, fs: Any) -> None:
     """Should return status 200 OK and body as html."""
-    contents = """
+    contents_nb = """
     <!doctype html>
     <html lang="nb">
     <title>Hallo verden</title>
@@ -67,7 +67,7 @@ async def test_get_default(client: Any, fs: Any) -> None:
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
-        contents=contents,
+        contents=contents_nb,
     )
 
     response = await client.get("/ontology-type-1/ontology-1")
@@ -77,13 +77,13 @@ async def test_get_default(client: Any, fs: Any) -> None:
     assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
-    assert document == contents
+    assert document == contents_nb
 
 
 @pytest.mark.integration
 async def test_get_html_nb_language(client: Any, fs: Any) -> None:
     """Should return status 200 OK and body as html in language nb."""
-    contents = """
+    contents_nb = """
     <!doctype html>
     <html lang="nb">
     <title>Hallo verden</title>
@@ -94,7 +94,7 @@ async def test_get_html_nb_language(client: Any, fs: Any) -> None:
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
-        contents=contents,
+        contents=contents_nb,
     )
 
     headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
@@ -106,13 +106,13 @@ async def test_get_html_nb_language(client: Any, fs: Any) -> None:
 
     document = await response.text()
     assert '<html lang="nb">' in document
-    assert document == contents
+    assert document == contents_nb
 
 
 @pytest.mark.integration
 async def test_get_html_nn_language(client: Any, fs: Any) -> None:
     """Should return status 200 OK and body as html in language nb."""
-    contents = """
+    contents_nn = """
     <!doctype html>
     <html lang="nn">
     <title>Hallo verda</title>
@@ -123,7 +123,7 @@ async def test_get_html_nn_language(client: Any, fs: Any) -> None:
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nn.html",
-        contents=contents,
+        contents=contents_nn,
     )
 
     headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
@@ -135,13 +135,13 @@ async def test_get_html_nn_language(client: Any, fs: Any) -> None:
 
     document = await response.text()
     assert '<html lang="nn">' in document
-    assert document == contents
+    assert document == contents_nn
 
 
 @pytest.mark.integration
 async def test_get_html_en_language(client: Any, fs: Any) -> None:
     """Should return status 200 OK and body as html in language en."""
-    contents = """
+    contents_en = """
     <!doctype html>
     <html lang="en">
     <title>Hello world</title>
@@ -152,7 +152,7 @@ async def test_get_html_en_language(client: Any, fs: Any) -> None:
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
-        contents=contents,
+        contents=contents_en,
     )
 
     headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
@@ -164,16 +164,16 @@ async def test_get_html_en_language(client: Any, fs: Any) -> None:
 
     document = await response.text()
     assert '<html lang="en">' in document
-    assert document == contents
+    assert document == contents_en
 
 
 @pytest.mark.integration
 async def test_get_accept_not_acceptable(client: Any, fs: Any) -> None:
     """Should return status 406 Not Acceptable."""
-    contents = '<p>Server says "Hello, world!"</p>'
+    contents_en = '<p>Server says "Hello, world!"</p>'
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.html",
-        contents=contents,
+        contents=contents_en,
     )
 
     headers = {hdrs.ACCEPT: "not/acceptable"}
@@ -185,10 +185,10 @@ async def test_get_accept_not_acceptable(client: Any, fs: Any) -> None:
 @pytest.mark.integration
 async def test_representation_not_found(client: Any, fs: Any) -> None:
     """Should return status 406 Not Acceptable."""
-    contents = '<p>Server says "Hello, world!"</p>'
+    contents_en = '<p>Server says "Hello, world!"</p>'
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1.json",
-        contents=contents,
+        contents=contents_en,
     )
 
     headers = {hdrs.ACCEPT: "text/turtle"}
@@ -215,7 +215,7 @@ async def test_get_html_en_language_when_en_does_not_exist(
     client: Any, fs: Any
 ) -> None:
     """Should return status 200 OK and body as html in language nb."""
-    contents = """
+    contents_nb = """
     <!doctype html>
     <html lang="nb">
     <title>Hallo verden</title>
@@ -226,7 +226,7 @@ async def test_get_html_en_language_when_en_does_not_exist(
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
-        contents=contents,
+        contents=contents_nb,
     )
 
     headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
@@ -238,7 +238,7 @@ async def test_get_html_en_language_when_en_does_not_exist(
 
     document = await response.text()
     assert '<html lang="nb">' in document
-    assert document == contents
+    assert document == contents_nb
 
 
 @pytest.mark.integration
@@ -246,7 +246,7 @@ async def test_get_html_nn_language_when_nn_does_not_exist(
     client: Any, fs: Any
 ) -> None:
     """Should return status 200 OK and body as html in language nb."""
-    contents = """
+    contents_nb = """
     <!doctype html>
     <html lang="nb">
     <title>Hallo verden</title>
@@ -257,7 +257,7 @@ async def test_get_html_nn_language_when_nn_does_not_exist(
     """
     fs.create_file(
         "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
-        contents=contents,
+        contents=contents_nb,
     )
 
     headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
@@ -269,4 +269,127 @@ async def test_get_html_nn_language_when_nn_does_not_exist(
 
     document = await response.text()
     assert '<html lang="nb">' in document
-    assert document == contents
+    assert document == contents_nb
+
+
+@pytest.mark.integration
+async def test_get_html_with_preferred_language_nb(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and body as html in preferred language."""
+    contents_nb = """
+    <!doctype html>
+    <html lang="nb">
+    <title>Hallo verden</title>
+
+    <body>
+        <p>Hallo, verden!</p>
+        <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
+    """
+    contents_en = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-04 14:20:00.</p>
+    """
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
+        contents=contents_nb,
+    )
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
+        contents=contents_en,
+    )
+
+    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en;q=0.8,nb;q=0.9"}
+    response = await client.get("/ontology-type-1/ontology-1", headers=headers)
+
+    assert response.status == 200
+    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    document = await response.text()
+    assert '<html lang="nb">' in document
+    assert document == contents_nb
+
+
+@pytest.mark.integration
+async def test_get_html_with_preferred_language_en(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and body as html in preferred language."""
+    contents_nb = """
+    <!doctype html>
+    <html lang="nb">
+    <title>Hallo verden</title>
+
+    <body>
+        <p>Hallo, verden!</p>
+        <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
+    """
+    contents_en = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-04 14:20:00.</p>
+    """
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
+        contents=contents_nb,
+    )
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
+        contents=contents_en,
+    )
+
+    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en;q=0.9,nb;q=0.8"}
+    response = await client.get("/ontology-type-1/ontology-1", headers=headers)
+
+    assert response.status == 200
+    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+    document = await response.text()
+    assert '<html lang="en">' in document
+    assert document == contents_en
+
+
+@pytest.mark.integration
+async def test_get_html_no_agreeable_language_en(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and body as html in default language."""
+    contents_nb = """
+    <!doctype html>
+    <html lang="nb">
+    <title>Hallo verden</title>
+
+    <body>
+        <p>Hallo, verden!</p>
+        <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
+    """
+    contents_en = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-04 14:20:00.</p>
+    """
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
+        contents=contents_nb,
+    )
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
+        contents=contents_en,
+    )
+
+    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "da"}
+    response = await client.get("/ontology-type-1/ontology-1", headers=headers)
+
+    assert response.status == 200
+    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    document = await response.text()
+    assert '<html lang="nb">' in document
+    assert document == contents_nb
