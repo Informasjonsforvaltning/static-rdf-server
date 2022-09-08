@@ -27,6 +27,15 @@ SUPPORTED_CONTENT_TYPES: List[str] = [
 # Default is first in list:
 SUPPORTED_LANGUAGES: List[str] = ["nb", "nb-NO", "nn", "nn-NO", "en", "en-GB"]
 
+LANGUAGE_FILE_SUFFIX = {
+    "nb": "nb",
+    "nb-NO": "nb",
+    "nn": "nn",
+    "nn-NO": "nn",
+    "en": "en",
+    "en-GB": "en",
+}
+
 
 async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
     """Process and store files."""
@@ -139,7 +148,9 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             filename = _filename.split(os.sep)[-1]
         else:
             if len(content_language) > 0:
-                filename = f"{ontology}-{content_language}.{extension}"
+                filename = (
+                    f"{ontology}-{LANGUAGE_FILE_SUFFIX[content_language]}.{extension}"
+                )
             else:
                 filename = f"{ontology}.{extension}"
 
@@ -185,7 +196,7 @@ async def get_ontology(request: web.Request) -> web.Response:
     # For html the filename is ontology-language.html
     filename: str
     if content_type == "text/html" and len(content_language) > 0:
-        filename = f"{ontology}-{content_language}.{extension}"
+        filename = f"{ontology}-{LANGUAGE_FILE_SUFFIX[content_language]}.{extension}"
     else:
         filename = f"{ontology}.{extension}"
 
@@ -197,11 +208,14 @@ async def get_ontology(request: web.Request) -> web.Response:
             body = f.read()
         headers = MultiDict([(hdrs.CONTENT_LANGUAGE, content_language)])
         return web.Response(text=body, headers=headers, content_type=content_type)
+    else:
+        logging.debug(f"Could not find full_path: {full_path}.")
 
     # For html-requests, if not found, we return the representation in the default langauge:
     if content_type == "text/html":
         filename = f"{ontology}-{default_language}.{extension}"
         full_path = os.path.join(data_root, ontology_type, ontology, filename)
+        logging.debug(f"Looking for fall-back full_path: {full_path}")
         if os.path.exists(full_path):
             with open(full_path, "r") as f:
                 body = f.read()

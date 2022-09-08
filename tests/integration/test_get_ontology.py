@@ -45,7 +45,7 @@ async def test_get_html_default_language(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -74,7 +74,7 @@ async def test_get_default(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
     assert document == contents_nb
@@ -102,7 +102,7 @@ async def test_get_html_nb_language(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -131,7 +131,7 @@ async def test_get_html_nn_language(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nn" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nn" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
     assert '<html lang="nn">' in document
@@ -160,7 +160,7 @@ async def test_get_html_en_language(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
     assert '<html lang="en">' in document
@@ -234,7 +234,7 @@ async def test_get_html_en_language_when_en_does_not_exist(
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -265,7 +265,7 @@ async def test_get_html_nn_language_when_nn_does_not_exist(
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -302,12 +302,15 @@ async def test_get_html_with_preferred_language_nb(client: Any, fs: Any) -> None
         contents=contents_en,
     )
 
-    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en;q=0.8,nb;q=0.9"}
+    headers = {
+        hdrs.ACCEPT: "text/html",
+        hdrs.ACCEPT_LANGUAGE: "nb-NO;q=0.9,nb,no;q=0.8,nn;q=0.7,en-US;q=0.6,en;q=0.5",
+    }
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
     assert document == contents_nb
@@ -343,12 +346,103 @@ async def test_get_html_with_preferred_language_en(client: Any, fs: Any) -> None
         contents=contents_en,
     )
 
-    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en;q=0.9,nb;q=0.8"}
+    headers = {
+        hdrs.ACCEPT: "text/html",
+        hdrs.ACCEPT_LANGUAGE: "en-GB;q=0.9,en,nb-NO;q=0.8,nb;q=0.7,en-US;q=0.6,da;q=0.5,no;q=0.4",
+    }
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
+    document = await response.text()
+    assert '<html lang="en">' in document
+    assert document == contents_en
+
+
+@pytest.mark.integration
+async def test_get_html_with_preferred_language_nb_NO(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and body as html in preferred language."""
+    contents_nb = """
+    <!doctype html>
+    <html lang="nb">
+    <title>Hallo verden</title>
+
+    <body>
+        <p>Hallo, verden!</p>
+        <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
+    """
+    contents_en = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-04 14:20:00.</p>
+    """
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
+        contents=contents_nb,
+    )
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
+        contents=contents_en,
+    )
+
+    headers = {
+        hdrs.ACCEPT: "text/html",
+        hdrs.ACCEPT_LANGUAGE: "nb-NO,nb;q=0.9,no;q=0.8,nn;q=0.7,en-US;q=0.6,en;q=0.5",
+    }
+    response = await client.get("/ontology-type-1/ontology-1", headers=headers)
+
+    assert response.status == 200
+    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "nb-NO" == response.headers[hdrs.CONTENT_LANGUAGE]
+    document = await response.text()
+    assert '<html lang="nb">' in document
+    assert document == contents_nb
+
+
+@pytest.mark.integration
+async def test_get_html_with_preferred_language_en_GB(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and body as html in preferred language."""
+    contents_nb = """
+    <!doctype html>
+    <html lang="nb">
+    <title>Hallo verden</title>
+
+    <body>
+        <p>Hallo, verden!</p>
+        <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
+    """
+    contents_en = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-04 14:20:00.</p>
+    """
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-nb.html",
+        contents=contents_nb,
+    )
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/ontology-1-en.html",
+        contents=contents_en,
+    )
+
+    headers = {
+        hdrs.ACCEPT: "text/html",
+        hdrs.ACCEPT_LANGUAGE: "en-GB,en;q=0.9,nb-NO;q=0.8,nb;q=0.7,en-US;q=0.6,da;q=0.5,no;q=0.4",
+    }
+    response = await client.get("/ontology-type-1/ontology-1", headers=headers)
+
+    assert response.status == 200
+    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "en-GB" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="en">' in document
     assert document == contents_en
@@ -356,7 +450,7 @@ async def test_get_html_with_preferred_language_en(client: Any, fs: Any) -> None
 
 @pytest.mark.integration
 async def test_get_html_no_agreeable_language_en(client: Any, fs: Any) -> None:
-    """Should return status 200 OK and body as html in default language."""
+    """Should return status 200 OK and body as html in default language (nb)."""
     contents_nb = """
     <!doctype html>
     <html lang="nb">
@@ -389,7 +483,7 @@ async def test_get_html_no_agreeable_language_en(client: Any, fs: Any) -> None:
 
     assert response.status == 200
     assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
     assert document == contents_nb
