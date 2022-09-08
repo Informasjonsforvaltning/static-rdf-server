@@ -1,9 +1,11 @@
 """Module for ontology route."""
 import logging
 import os
+from textwrap import dedent
 from typing import Any, List
 
 from aiohttp import hdrs, web
+from content_negotiation import decide_content_type, NoAgreeableContentTypeError
 from multidict import MultiDict
 
 
@@ -37,23 +39,32 @@ async def get_ontology_type(request: web.Request) -> web.Response:
     """Should generate and return a list of ontologies in give ontology-type as a html-document."""
     data_root = request.app["DATA_ROOT"]
     ontology_type = request.match_info["ontology_type"]
-    accept_header = request.headers.get(hdrs.ACCEPT, None)
-    if not accept_header or "*" in accept_header or "text/html" in accept_header:
-        pass
-    else:
-        raise web.HTTPNotAcceptable()
+    try:
+        content_type = decide_content_type(
+            request.headers.getall(hdrs.ACCEPT, []),
+            supported_content_types=["text/html"],
+        )
+    except NoAgreeableContentTypeError as e:
+        raise web.HTTPNotAcceptable() from e
 
     data_root = request.app["DATA_ROOT"]
     ontology_type_path = os.path.join(data_root, ontology_type)
 
     # Read content of data-root, and map all folders to a list of ontology_types:
     ontologies: List[Any] = next(os.walk(ontology_type_path), (None, [], None))[1]
+    headers = MultiDict(
+        [(hdrs.CONTENT_TYPE, content_type), (hdrs.CONTENT_LANGUAGE, "en")]
+    )
+    if len(ontologies) == 0:
+        # We have no ontologies, so we return a 404:
+        body = await generate_html_not_found()
+        status = 404
+    else:
+        # Generate html with the list as body:
+        body = await generate_html_document(ontology_type, ontologies)
+        status = 200
 
-    # Generate html with the list as body:
-    body = await generate_html_document(ontology_type, ontologies)
-    headers = MultiDict([(hdrs.CONTENT_LANGUAGE, "en")])
-
-    return web.Response(text=body, headers=headers, content_type="text/html")
+    return web.Response(text=body, headers=headers, status=status)
 
 
 async def generate_html_document(ontology_type: str, ontologies: List[str]) -> str:
@@ -77,3 +88,21 @@ async def generate_html_document(ontology_type: str, ontologies: List[str]) -> s
 
     # Concatenates all the statments into a string:
     return "".join(html_statements)
+
+
+async def generate_html_not_found() -> str:
+    """Simple not found page."""
+    # Generate and return the html:
+    return dedent(
+        """
+        <!doctype html>
+        <html lang="en">
+            <head>
+                <title>Not found</title>
+            </head>
+            <body>
+                <p>The page you are looking for does not exist.</p>
+            </body>
+        </html>
+    """
+    ).strip()

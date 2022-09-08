@@ -88,7 +88,7 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
     )
 
     assert response.status == 201
-    assert f"{ontology_type}/{ontology}" in response.headers[hdrs.LOCATION]
+    assert f"{ontology_type}/{ontology}" == response.headers[hdrs.LOCATION]
 
 
 @pytest.mark.integration
@@ -158,7 +158,7 @@ async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> No
     )
 
     assert response.status == 204
-    assert hdrs.LOCATION not in response.headers
+    assert hdrs.LOCATION != response.headers
 
 
 @pytest.mark.integration

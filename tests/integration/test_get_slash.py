@@ -25,8 +25,8 @@ async def test_get_slash(client: Any, fs: Any) -> None:
     response = await client.get("/", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     text = await response.text()
     assert text == expected

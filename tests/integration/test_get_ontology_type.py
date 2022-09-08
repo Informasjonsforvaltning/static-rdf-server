@@ -1,4 +1,5 @@
 """Test cases for the server module."""
+from textwrap import dedent
 from typing import Any
 
 from aiohttp import hdrs
@@ -39,8 +40,38 @@ async def test_get_ontology_type(client: Any, fs: Any) -> None:
     response = await client.get(f"/{ontology_type}", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-    assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+    assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
+
+    text = await response.text()
+    assert text == expected
+
+
+@pytest.mark.integration
+async def test_get_ontology_type_that_does_not_exist(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and html document."""
+    expected = dedent(
+        """
+        <!doctype html>
+        <html lang="en">
+            <head>
+                <title>Not found</title>
+            </head>
+            <body>
+                <p>The page you are looking for does not exist.</p>
+            </body>
+        </html>
+    """
+    ).strip()
+
+    ontology_type = "does_not_exist"
+
+    headers = {hdrs.ACCEPT: "text/html"}
+    response = await client.get(f"/{ontology_type}", headers=headers)
+
+    assert response.status == 404
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+    assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     text = await response.text()
     assert text == expected

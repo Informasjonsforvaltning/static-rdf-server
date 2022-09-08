@@ -24,7 +24,7 @@ async def test_create_ontology_type(http_service: Any) -> None:
 
         # ASSERT
         assert response.status == 204, body
-        assert f"{ontology_type}" in response.headers[hdrs.LOCATION]
+        assert f"{ontology_type}" == response.headers[hdrs.LOCATION]
 
         # Get turtle-representation:
         headers = {hdrs.ACCEPT: "text/turtle"}
@@ -37,8 +37,8 @@ async def test_create_ontology_type(http_service: Any) -> None:
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
         assert body
 
         # Get html-representations: nb
@@ -46,8 +46,8 @@ async def test_create_ontology_type(http_service: Any) -> None:
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
         assert body
 
         # Get html-representations: nn
@@ -55,8 +55,8 @@ async def test_create_ontology_type(http_service: Any) -> None:
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
         assert body
 
         # Get html-representations: unknown language
@@ -64,8 +64,8 @@ async def test_create_ontology_type(http_service: Any) -> None:
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
         assert body
 
         # Get html-representations: default language
@@ -73,8 +73,8 @@ async def test_create_ontology_type(http_service: Any) -> None:
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
         assert body
 
 

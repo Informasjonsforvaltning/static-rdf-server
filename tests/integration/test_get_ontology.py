@@ -18,7 +18,7 @@ async def test_get_rdf_turtle(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/turtle" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/turtle; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     text = await response.text()
     assert text == contents_en
 
@@ -44,7 +44,7 @@ async def test_get_html_default_language(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
@@ -73,7 +73,7 @@ async def test_get_default(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1")
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -101,7 +101,7 @@ async def test_get_html_nb_language(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
@@ -130,7 +130,7 @@ async def test_get_html_nn_language(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nn" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
@@ -159,7 +159,7 @@ async def test_get_html_en_language(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
@@ -233,7 +233,7 @@ async def test_get_html_en_language_when_en_does_not_exist(
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
@@ -264,7 +264,7 @@ async def test_get_html_nn_language_when_nn_does_not_exist(
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
     document = await response.text()
@@ -309,7 +309,7 @@ async def test_get_html_with_preferred_language_nb(client: Any, fs: Any) -> None
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -353,7 +353,7 @@ async def test_get_html_with_preferred_language_en(client: Any, fs: Any) -> None
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="en">' in document
@@ -397,7 +397,7 @@ async def test_get_html_with_preferred_language_nb_NO(client: Any, fs: Any) -> N
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb-NO" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
@@ -441,7 +441,7 @@ async def test_get_html_with_preferred_language_en_GB(client: Any, fs: Any) -> N
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "en-GB" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="en">' in document
@@ -482,7 +482,7 @@ async def test_get_html_no_agreeable_language_en(client: Any, fs: Any) -> None:
     response = await client.get("/ontology-type-1/ontology-1", headers=headers)
 
     assert response.status == 200
-    assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
     document = await response.text()
     assert '<html lang="nb">' in document
