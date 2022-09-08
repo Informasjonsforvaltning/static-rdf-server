@@ -18,6 +18,15 @@ from static_rdf_server.utils import (
     valid_file_extension,
 )
 
+# Default is first in list:
+SUPPORTED_CONTENT_TYPES: List[str] = [
+    "text/html",
+    "text/turtle",
+]
+
+# Default is first in list:
+SUPPORTED_LANGUAGES: List[str] = ["nb", "nb-NO", "nn", "nn-NO", "en", "en-GB"]
+
 
 async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
     """Process and store files."""
@@ -164,15 +173,18 @@ async def get_ontology(request: web.Request) -> web.Response:
     # Then we check headers to decide what representation to look for:
     try:
         content_type, content_language, extension = await decide_content_and_extension(
-            request.headers.get(hdrs.ACCEPT),
-            request.headers.get(hdrs.ACCEPT_LANGUAGE),
+            request.headers.getall(hdrs.ACCEPT, []),
+            SUPPORTED_CONTENT_TYPES,
+            request.headers.getall(hdrs.ACCEPT_LANGUAGE, []),
+            SUPPORTED_LANGUAGES,
         )
     except ContentTypeNotSupportedException as e:
         raise web.HTTPNotAcceptable(reason=str(e)) from e
 
-    # We finally try to get the corresponding representation:
+    # We finally try to get the corresponding representation.
+    # For html the filename is ontology-language.html
     filename: str
-    if len(content_language) > 0:
+    if content_type == "text/html" and len(content_language) > 0:
         filename = f"{ontology}-{content_language}.{extension}"
     else:
         filename = f"{ontology}.{extension}"

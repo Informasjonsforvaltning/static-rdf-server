@@ -8,7 +8,7 @@ package = "app"
 locations = "static_rdf_server", "tests", "noxfile.py"
 nox.options.envdir = ".cache"
 nox.options.reuse_existing_virtualenvs = True
-nox.options.stop_on_first_error = True
+nox.options.stop_on_first_error = False
 nox.options.sessions = (
     "lint",
     "mypy",
@@ -34,7 +34,7 @@ def unit_tests(session: Session) -> None:
     session.run(
         "pytest",
         "-m unit",
-        "-rA",
+        "-ra",
         *args,
     )
 
@@ -57,7 +57,7 @@ def integration_tests(session: Session) -> None:
     session.run(
         "pytest",
         "-m integration",
-        "-rF",
+        "-ra",
         *args,
         env={
             "LOGGING_LEVEL": "DEBUG",
@@ -84,7 +84,7 @@ def contract_tests(session: Session) -> None:
     session.run(
         "pytest",
         "-m contract",
-        "-rA",
+        "-ra",
         *args,
         env={
             "LOGGING_LEVEL": "DEBUG",
@@ -124,7 +124,7 @@ def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = session.poetry.export_requirements()
     session.install("safety")
-    session.run("safety", "check", "--full-report", f"--file={requirements}")
+    session.run("safety", "check", f"--file={requirements}", "--output", "text")
 
 
 @session(python="3.9")
