@@ -3,16 +3,19 @@ import os
 from typing import Any, List
 
 from aiohttp import hdrs, web
+from content_negotiation import decide_content_type, NoAgreeableContentTypeError
 from multidict import MultiDict
 
 
 async def get_slash(request: web.Request) -> web.Response:
     """Should generate and return a list of ontology-types as a html-document."""
-    accept_header = request.headers.get(hdrs.ACCEPT, None)
-    if not accept_header or "*" in accept_header or "text/html" in accept_header:
-        pass
-    else:
-        raise web.HTTPNotAcceptable()
+    try:
+        content_type = decide_content_type(
+            request.headers.getall(hdrs.ACCEPT, []),
+            supported_content_types=["text/html"],
+        )
+    except NoAgreeableContentTypeError as e:
+        raise web.HTTPNotAcceptable() from e
 
     data_root = request.app["DATA_ROOT"]
     default_language = request.app["DEFAULT_LANGUAGE"]
@@ -22,9 +25,11 @@ async def get_slash(request: web.Request) -> web.Response:
 
     # Generate html with the list as body:
     body = await generate_html_document(ontology_types)
-    headers = MultiDict([(hdrs.CONTENT_LANGUAGE, default_language)])
+    headers = MultiDict(
+        [(hdrs.CONTENT_TYPE, content_type), (hdrs.CONTENT_LANGUAGE, default_language)]
+    )
 
-    return web.Response(text=body, headers=headers, content_type="text/html")
+    return web.Response(text=body, headers=headers)
 
 
 async def generate_html_document(ontology_types: List[str]) -> str:

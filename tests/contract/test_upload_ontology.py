@@ -86,47 +86,47 @@ async def test_put_ontology(http_service: Any) -> None:
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/turtle" in response.headers[hdrs.CONTENT_TYPE]
+        assert "text/turtle; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
 
         # Get html-representations: en
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "en" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
 
         # Get html-representations: nb
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
         # Get html-representations: nn
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "nn" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "nn" == response.headers[hdrs.CONTENT_LANGUAGE]
 
         # Get html-representations: unknown language
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
         # Get html-representations: default language
         headers = {hdrs.ACCEPT: "text/html"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
         assert response.status == 200
-        assert "text/html" in response.headers[hdrs.CONTENT_TYPE]
-        assert "nb" in response.headers[hdrs.CONTENT_LANGUAGE]
+        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+        assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
 
 
 @pytest.mark.contract

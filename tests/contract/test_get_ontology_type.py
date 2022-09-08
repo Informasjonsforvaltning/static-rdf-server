@@ -38,3 +38,28 @@ async def test_get_ontology_type(http_service: Any, chrome_service: Any) -> None
     assert href.text == "hello-world-to-be-deleted"
 
     driver.quit()
+
+
+@pytest.mark.contract
+@pytest.mark.asyncio
+async def test_get_ontology_type_that_does_not_exist(
+    http_service: Any, chrome_service: Any
+) -> None:
+    """Should return 404 Not found."""
+    url = f"{http_service}/does-not-exist"
+
+    options = ChromeOptions()
+    options.headless = True
+
+    driver = webdriver.Chrome(
+        service=chrome_service, options=options
+    )  # pytype: disable=wrong-keyword-args
+
+    driver.get(url)
+
+    assert driver.title == "Not found"
+    elements = driver.find_elements(By.TAG_NAME, "p")
+    assert len(elements) == 1
+    assert elements[0].text == "The page you are looking for does not exist."
+
+    driver.quit()

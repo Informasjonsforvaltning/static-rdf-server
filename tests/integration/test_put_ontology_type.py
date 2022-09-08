@@ -20,7 +20,7 @@ async def test_put_ontology_type_when_type_does_exist(client: Any, fs: Any) -> N
     response = await client.put(f"/{ontology_type}", headers=headers)
 
     assert response.status == 204
-    assert f"{ontology_type}" in response.headers[hdrs.LOCATION]
+    assert f"{ontology_type}" == response.headers[hdrs.LOCATION]
 
 
 @pytest.mark.integration
@@ -37,7 +37,7 @@ async def test_put_ontology_type_when_type_does_not_exist(client: Any, fs: Any) 
     response = await client.put(f"/{ontology_type}", headers=headers)
 
     assert response.status == 201
-    assert f"{ontology_type}" in response.headers[hdrs.LOCATION]
+    assert f"{ontology_type}" == response.headers[hdrs.LOCATION]
 
 
 @pytest.mark.integration

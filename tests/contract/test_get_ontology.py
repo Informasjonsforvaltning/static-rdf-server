@@ -166,7 +166,7 @@ async def test_get_example_hello_world_turtle(http_service: Any) -> None:
             document = await response.text()
 
     assert response.status == 200
-    assert "text/turtle" in response.headers[hdrs.CONTENT_TYPE]
+    assert "text/turtle; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert (
         '<http://example.com/server> <http://example.com/says> "Hello World" .'
         in document
