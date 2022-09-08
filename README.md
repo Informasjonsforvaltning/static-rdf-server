@@ -16,8 +16,8 @@ Say you want to upload two files to your ontology of ontology-type "vocabulary".
 ```shell
 % curl -i \ 
  -H "X-API-KEY: supersecretapikey" \
- -F "ontology-rdf-file=@tests/files/examples/hello-world/hello-world.ttl;type=text/turtle" \
- -F "ontology-html-file=@tests/files/examples/hello-world/hello-world-en.html;type=text/html;headers=\"content-language: en\"" \
+ -F "ontology-rdf-file=@tests/files/input/hello-world.ttl;type=text/turtle" \
+ -F "ontology-html-file=@tests/files/input/hello-world-en.html;type=text/html;headers=\"content-language: en\"" \
  -X PUT http://localhost:8080/examples/hello-world
 ```
 
@@ -39,7 +39,7 @@ If the ontology exists, it will be updated. Otherwise it will be created.
 ### To create a new type
 
 ```Shell
-% curl -H"X-API-KEY: supersecret" -H "Content-type: application/json" -X PUT --data '{"type":"specification"}' http://localhost:8080/specification
+% curl -H"X-API-KEY: supersecretapikey" -H "Content-type: application/json" -X PUT --data '{"type":"specification"}' http://localhost:8080/specification
 ```
 
 ## Location of ontology files
@@ -109,7 +109,7 @@ A minimal .env:
 
 ```shell
 LOGGING_LEVEL=DEBUG
-API_KEY=supersecret
+API_KEY=supersecretapikey
 ```
 
 ### Run i development-mode
