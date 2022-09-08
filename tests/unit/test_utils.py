@@ -9,13 +9,13 @@ from static_rdf_server.utils import (
 )
 
 # Default is the first in the list:
-SUPPORTED_CONTENT_TYPES = [
+SUPPORTED_CONTENT_TYPES: List[str] = [
     "text/html",
     "text/turtle",
 ]
 
 # Default is the first in the list:
-SUPPORTED_LANGUAGES = ["en", "nb", "nn", "en-GB", "nb-NO", "nn-NO"]
+SUPPORTED_LANGUAGES: List[str] = ["en", "nb", "nn", "en-GB", "nb-NO", "nn-NO"]
 
 EXTENSION_MAP: Dict[str, str] = {
     "text/html": "html",

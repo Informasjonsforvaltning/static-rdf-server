@@ -1,5 +1,5 @@
 """Module for util functions."""
-from typing import Any, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from content_negotiation import (
     decide_content_type,
@@ -10,7 +10,7 @@ from content_negotiation import (
 from rdflib import Graph
 from rdflib.exceptions import ParserError
 
-EXTENSION_MAP = {"text/html": "html", "text/turtle": "ttl"}
+EXTENSION_MAP: Dict[str, str] = {"text/html": "html", "text/turtle": "ttl"}
 
 
 class ContentTypeNotSupportedException(Exception):

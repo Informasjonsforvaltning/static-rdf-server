@@ -19,13 +19,13 @@ from static_rdf_server.utils import (
 )
 
 # Default is first in list:
-SUPPORTED_CONTENT_TYPES = [
+SUPPORTED_CONTENT_TYPES: List[str] = [
     "text/html",
     "text/turtle",
 ]
 
 # Default is first in list:
-SUPPORTED_LANGUAGES = ["nb", "nb-NO", "nn", "nn-NO", "en", "en-GB"]
+SUPPORTED_LANGUAGES: List[str] = ["nb", "nb-NO", "nn", "nn-NO", "en", "en-GB"]
 
 
 async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
