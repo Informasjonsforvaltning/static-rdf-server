@@ -18,12 +18,14 @@ from static_rdf_server.utils import (
     valid_file_extension,
 )
 
+# Default is first in list:
 SUPPORTED_CONTENT_TYPES = [
     "text/html",
     "text/turtle",
 ]
 
-SUPPORTED_LANGUAGES = ["en", "nb", "nn", "en-GB", "nb-NO", "nn-NO"]
+# Default is first in list:
+SUPPORTED_LANGUAGES = ["nb", "nb-NO", "nn", "nn-NO", "en", "en-GB"]
 
 
 async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
@@ -179,9 +181,10 @@ async def get_ontology(request: web.Request) -> web.Response:
     except ContentTypeNotSupportedException as e:
         raise web.HTTPNotAcceptable(reason=str(e)) from e
 
-    # We finally try to get the corresponding representation:
+    # We finally try to get the corresponding representation.
+    # For html the filename is ontology-language.html
     filename: str
-    if len(content_language) > 0:
+    if content_type == "text/html" and len(content_language) > 0:
         filename = f"{ontology}-{content_language}.{extension}"
     else:
         filename = f"{ontology}.{extension}"

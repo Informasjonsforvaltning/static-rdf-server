@@ -1,5 +1,5 @@
 """Unit test cases for the event-service module."""
-from typing import List
+from typing import Dict, List
 
 import pytest
 
@@ -8,17 +8,24 @@ from static_rdf_server.utils import (
     decide_content_and_extension,
 )
 
+# Default is the first in the list:
 SUPPORTED_CONTENT_TYPES = [
     "text/html",
     "text/turtle",
 ]
 
+# Default is the first in the list:
 SUPPORTED_LANGUAGES = ["en", "nb", "nn", "en-GB", "nb-NO", "nn-NO"]
+
+EXTENSION_MAP: Dict[str, str] = {
+    "text/html": "html",
+    "text/turtle": "ttl",
+}
 
 
 @pytest.mark.unit
 async def test_decide_content_type_and_extension_default() -> None:
-    """Should return text/html, html."""
+    """Should return defaults."""
     accept_header: List[str] = []
     accept_language_header: List[str] = []
 
@@ -29,14 +36,14 @@ async def test_decide_content_type_and_extension_default() -> None:
         SUPPORTED_LANGUAGES,
     )
 
-    assert content_type == "text/html"
-    assert content_language == ""
-    assert extension == "html"
+    assert content_type == SUPPORTED_CONTENT_TYPES[0]
+    assert extension == EXTENSION_MAP[SUPPORTED_CONTENT_TYPES[0]]
+    assert content_language == SUPPORTED_LANGUAGES[0]
 
 
 @pytest.mark.unit
 async def test_decide_content_type_and_extension_star() -> None:
-    """Should return text/html, html."""
+    """Should return text/html, html and default language."""
     accept_header: List[str] = ["*/*"]
     accept_language_header: List[str] = []
 
@@ -47,14 +54,14 @@ async def test_decide_content_type_and_extension_star() -> None:
         SUPPORTED_LANGUAGES,
     )
 
-    assert content_type == "text/html"
-    assert content_language == ""
-    assert extension == "html"
+    assert content_type == SUPPORTED_CONTENT_TYPES[0]
+    assert extension == EXTENSION_MAP[SUPPORTED_CONTENT_TYPES[0]]
+    assert content_language == SUPPORTED_LANGUAGES[0]
 
 
 @pytest.mark.unit
 async def test_decide_content_type_and_extension_turtle_plus_star() -> None:
-    """Should return text/turtle, ttl."""
+    """Should return text/turtle, ttl and default language."""
     accept_header: List[str] = ["text/turtle,*/*"]
     accept_language_header: List[str] = []
 
@@ -66,13 +73,13 @@ async def test_decide_content_type_and_extension_turtle_plus_star() -> None:
     )
 
     assert content_type == "text/turtle"
-    assert content_language == ""
-    assert extension == "ttl"
+    assert content_language == SUPPORTED_LANGUAGES[0]
+    assert extension == EXTENSION_MAP["text/turtle"]
 
 
 @pytest.mark.unit
 async def test_decide_content_type_and_extension_html_plus_star() -> None:
-    """Should return text/turtle, ttl."""
+    """Should return text/html, html and default language."""
     accept_header: List[str] = ["text/html,*/*"]
     accept_language_header: List[str] = []
 
@@ -84,13 +91,13 @@ async def test_decide_content_type_and_extension_html_plus_star() -> None:
     )
 
     assert content_type == "text/html"
-    assert content_language == ""
-    assert extension == "html"
+    assert content_language == SUPPORTED_LANGUAGES[0]
+    assert extension == EXTENSION_MAP["text/html"]
 
 
 @pytest.mark.unit
 async def test_decide_content_type_and_extension_html() -> None:
-    """Should return text/html, html."""
+    """Should return text/html, html and default_language."""
     accept_header: List[str] = ["text/html"]
     accept_language_header: List[str] = []
 
@@ -102,8 +109,8 @@ async def test_decide_content_type_and_extension_html() -> None:
     )
 
     assert content_type == "text/html"
-    assert content_language == ""
-    assert extension == "html"
+    assert content_language == SUPPORTED_LANGUAGES[0]
+    assert extension == EXTENSION_MAP["text/html"]
 
 
 @pytest.mark.unit
@@ -120,8 +127,8 @@ async def test_decide_content_type_and_extension_RDF_turtle() -> None:
     )
 
     assert content_type == "text/turtle"
-    assert content_language == ""
-    assert extension == "ttl"
+    assert content_language == SUPPORTED_LANGUAGES[0]
+    assert extension == EXTENSION_MAP["text/turtle"]
 
 
 @pytest.mark.unit

@@ -10,6 +10,8 @@ from content_negotiation import (
 from rdflib import Graph
 from rdflib.exceptions import ParserError
 
+EXTENSION_MAP = {"text/html": "html", "text/turtle": "ttl"}
+
 
 class ContentTypeNotSupportedException(Exception):
     """Class representing the content-type not supported exception."""
@@ -31,36 +33,25 @@ async def decide_content_and_extension(
 ) -> Tuple[str, str, str]:
     """Return content_language, content_type and extension based on request."""
     # Default content-type/content-language/extension:
-    content_language = ""
-    content_type: str = "text/html"
-    extension: str = "html"
+    content_language: str
+    content_type: str
+    extension: str
 
-    # We inspect the accept-header:
-    if len(accept_header) > 0:
-        try:
-            content_type = decide_content_type(accept_header, supported_content_types)
-            if content_type == "text/turtle":
-                extension = "ttl"
-            elif content_type == "text/html":
-                extension = "html"
-        except NoAgreeableContentTypeError as e:
-            raise ContentTypeNotSupportedException(
-                f"None of the content-types in {accept_header} are supported."
-            ) from e
-    else:
-        pass  # pragma: no cover
+    # Decide content-type:
+    try:
+        content_type = decide_content_type(accept_header, supported_content_types)
+        extension = EXTENSION_MAP[content_type]
+    except NoAgreeableContentTypeError as e:
+        raise ContentTypeNotSupportedException(
+            f"None of the content-types in {accept_header} are supported."
+        ) from e
 
-    # for text/html, we inspect the accept-language-header:
-    if content_type == "text/html":
-        if len(accept_language_header) > 0:
-            try:
-                content_language = decide_language(
-                    accept_language_header, supported_languages
-                )
-            except NoAgreeableLanguageError:
-                content_language = "nb"
-        else:
-            pass
+    # Decide content-language:
+    try:
+        content_language = decide_language(accept_language_header, supported_languages)
+    except NoAgreeableLanguageError:
+        # content-language should be the default language:
+        content_language = supported_languages[0]
 
     return (content_type, content_language, extension)
 
