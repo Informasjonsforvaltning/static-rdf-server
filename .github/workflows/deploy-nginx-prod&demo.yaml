@@ -12,15 +12,12 @@ jobs:
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
     with:
       app_name: static-rdf-nginx
-      caller_sha: ${{ github.sha }}
-      repo: ${{ github.repository }}
-      actor: ${{ github.actor }}
       python_version: '3.9'
       python_architecture: x64
       environment: prod
       cluster: digdir-fdk-prod
-      nox_env: True
-      nox_env_name: API_KEY
+      nox_env: 1
+      nox_env_1_name: API_KEY
       nox_cmd: '-s contract_tests'
       dockerfile_context: ./nginx/
       dockerfile: ./nginx/Dockerfile
@@ -29,7 +26,8 @@ jobs:
       GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
       DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_PROD_AUTODEPLOY }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      NOX_ENV_VALUE: ${{ secrets.TEST_API_KEY }}
+      DEPENDABOT_SLACK_WEBHOOK_URL: ${{ secrets.DEPENDABOT_SLACK_WEBHOOK_URL }}
+      NOX_ENV_1_VALUE: ${{ secrets.TEST_API_KEY }}
 
   deploy-to-demo:
     needs: build-and-deploy-production
@@ -37,12 +35,10 @@ jobs:
     uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
     with:
       app_name: static-rdf-nginx
-      caller_sha: ${{ github.sha }}
-      repo: ${{ github.repository }}
-      actor: ${{ github.actor }}
       environment: demo
       cluster: digdir-fdk-dev
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      DEPENDABOT_SLACK_WEBHOOK_URL: ${{ secrets.DEPENDABOT_SLACK_WEBHOOK_URL }}
