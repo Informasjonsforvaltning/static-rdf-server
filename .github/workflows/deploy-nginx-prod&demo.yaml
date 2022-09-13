@@ -12,13 +12,13 @@ jobs:
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
     with:
       app_name: static-rdf-nginx
-      python_version: '3.9'
+      python_version: "3.10"
       python_architecture: x64
       environment: prod
       cluster: digdir-fdk-prod
       nox_env: 1
       nox_env_1_name: API_KEY
-      nox_cmd: '-s contract_tests'
+      nox_cmd: "-s contract_tests"
       dockerfile_context: ./nginx/
       dockerfile: ./nginx/Dockerfile
     secrets:

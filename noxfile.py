@@ -16,10 +16,11 @@ nox.options.sessions = (
     "unit_tests",
     "integration_tests",
     "contract_tests",
+    "e2e_tests",
 )
 
 
-@session(python="3.9")
+@session(python="3.10")
 def unit_tests(session: Session) -> None:
     """Run the unit test suite."""
     args = session.posargs
@@ -39,7 +40,7 @@ def unit_tests(session: Session) -> None:
     )
 
 
-@session(python="3.9")
+@session(python="3.10")
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
@@ -64,11 +65,12 @@ def integration_tests(session: Session) -> None:
             "SERVER_ROOT": "/srv/www/static-rdf-server",
             "DATA_ROOT": "/srv/www/static-rdf-server/data",
             "STATIC_ROOT": "/srv/www/static-rdf-server/static",
+            "API_KEY": "supersecretapikey",
         },
     )
 
 
-@session(python="3.9")
+@session(python="3.10")
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -88,11 +90,48 @@ def contract_tests(session: Session) -> None:
         *args,
         env={
             "LOGGING_LEVEL": "DEBUG",
+            "API_KEY": "supersecretapikey",
         },
     )
 
 
-@session(python="3.9")
+@session(python="3.10")
+def e2e_tests(session: Session) -> None:
+    """Run the e2e test suite."""
+    session.run(
+        "docker-compose",
+        "up",
+        "--detach",
+        "--build",
+        external=True,
+        env={
+            "LOGGING_LEVEL": "DEBUG",
+            "API_KEY": "supersecretapikey",
+        },
+    )
+    try:
+        with session.chdir("e2e"):
+            # Runs in "e2e"
+            session.run(
+                "npm",
+                "install",
+                external=True,
+            )
+            session.run(
+                "npx",
+                "cypress",
+                "run",
+                external=True,
+            )
+    finally:
+        session.run(
+            "docker-compose",
+            "down",
+            external=True,
+        )
+
+
+@session(python="3.10")
 def black(session: Session) -> None:
     """Run black code formatter."""
     args = session.posargs or locations
@@ -100,7 +139,7 @@ def black(session: Session) -> None:
     session.run("black", *args)
 
 
-@session(python="3.9")
+@session(python="3.10")
 def lint(session: Session) -> None:
     """Lint using flake8."""
     args = session.posargs or locations
@@ -119,7 +158,7 @@ def lint(session: Session) -> None:
     session.run("flake8", *args)
 
 
-@session(python="3.9")
+@session(python="3.10")
 def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = session.poetry.export_requirements()
@@ -127,7 +166,7 @@ def safety(session: Session) -> None:
     session.run("safety", "check", f"--file={requirements}", "--output", "text")
 
 
-@session(python="3.9")
+@session(python="3.10")
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or [
@@ -143,7 +182,7 @@ def mypy(session: Session) -> None:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.9")
+@session(python="3.10")
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]
@@ -151,7 +190,7 @@ def pytype(session: Session) -> None:
     session.run("pytype", *args)
 
 
-@session(python="3.9")
+@session(python="3.10")
 def coverage(session: Session) -> None:
     """Upload coverage data."""
     session.install("coverage[toml]", "codecov")

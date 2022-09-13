@@ -10,6 +10,7 @@ services:
       - API_KEY=${API_KEY}
     volumes:
       - ./tests/files/workspace/:/srv/www/static-rdf-server/
+
   static-rdf-nginx:
     build: nginx/.
     ports:
