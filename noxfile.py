@@ -29,8 +29,6 @@ def unit_tests(session: Session) -> None:
         "pytest",
         "pytest-asyncio",
         "requests",
-        "selenium",
-        "webdriver-manager",
     )
     session.run(
         "pytest",
@@ -52,8 +50,6 @@ def integration_tests(session: Session) -> None:
         "pytest-aiohttp",
         "pyfakefs",
         "requests",
-        "selenium",
-        "webdriver-manager",
     )
     session.run(
         "pytest",
@@ -80,8 +76,6 @@ def contract_tests(session: Session) -> None:
         "pytest-docker",
         "pytest-aiohttp",
         "requests",
-        "selenium",
-        "webdriver-manager",
     )
     session.run(
         "pytest",
@@ -98,12 +92,13 @@ def contract_tests(session: Session) -> None:
 @session(python="3.10")
 def e2e_tests(session: Session) -> None:
     """Run the e2e test suite."""
+    session.install(".")
+    session.install("docker-compose")
     session.run(
         "docker-compose",
         "up",
         "--detach",
         "--build",
-        external=True,
         env={
             "LOGGING_LEVEL": "DEBUG",
             "API_KEY": "supersecretapikey",
@@ -127,7 +122,6 @@ def e2e_tests(session: Session) -> None:
         session.run(
             "docker-compose",
             "down",
-            external=True,
         )
 
 

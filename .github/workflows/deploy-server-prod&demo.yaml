@@ -14,6 +14,7 @@ jobs:
       app_name: static-rdf-server
       python_version: "3.10"
       python_architecture: x64
+      node_version: 16
       environment: prod
       cluster: digdir-fdk-prod
       nox_image: True

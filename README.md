@@ -118,8 +118,8 @@ The static files to be served should be store under `/srv/www/static-rdf-server/
 ### Install software
 
 ```Shell
-% git clone https://github.com/Informasjonsforvaltning/dataservice-publisher.git
-% cd dataservice-publisher
+% git clone https://github.com/Informasjonsforvaltning/static-rdf-server.git
+% cd static-rdf-server
 % pyenv install 3.10.7
 % pyenv local 3.10.7
 % poetry install
