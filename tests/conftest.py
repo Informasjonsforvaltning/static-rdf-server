@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 import pytest
 import requests
 from requests.exceptions import ConnectionError
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 
 from static_rdf_server import create_app
 
@@ -36,15 +34,6 @@ def is_responsive(url: Any) -> Any:
             return True
     except ConnectionError:
         return False
-
-
-@pytest.mark.contract
-@pytest.fixture(scope="session")
-def chrome_service() -> Any:
-    """A selenium driver instance."""
-    chrome_service = ChromeService(executable_path=ChromeDriverManager().install())
-
-    return chrome_service
 
 
 @pytest.mark.contract

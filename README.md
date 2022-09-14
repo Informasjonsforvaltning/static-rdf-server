@@ -101,6 +101,30 @@ The static files to be served should be store under `/srv/www/static-rdf-server/
 
 ## Run locally
 
+### Requirements
+
+- [pipx](https://github.com/pypa/pipx)
+- [pyenv](https://github.com/pyenv/pyenv-installer)
+- [poetry](https://python-poetry.org/)
+- [nox](https://nox.thea.codes/en/stable/)
+- [nox-poetry](https://pypi.org/project/nox-poetry/)
+
+```Shell
+% pipx install nox
+% pipx install poetry
+% pipx inject nox nox-poetry
+```
+
+### Install software
+
+```Shell
+% git clone https://github.com/Informasjonsforvaltning/static-rdf-server.git
+% cd static-rdf-server
+% pyenv install 3.10.7
+% pyenv local 3.10.7
+% poetry install
+```
+
 ### Environment variables
 
 To run the service locally, you need to supply a set of environment variables. A simple way to solve this is to supply a .env file in the project root directory.
@@ -161,4 +185,15 @@ To run tests with logging, do:
 
 ```shell
 % nox -s integration_tests -- --log-cli-level=DEBUG
+```
+
+### e2e tests
+
+We use cypress for e2e tests. To run the tests, do:
+
+```shell
+% cd e2e
+% npm install cypress --save-dev
+% docker-compose -f ../docker-compose.yml up -d --build
+% npx cypress run
 ```

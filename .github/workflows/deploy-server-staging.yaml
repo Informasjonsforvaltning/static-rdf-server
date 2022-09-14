@@ -11,7 +11,7 @@ jobs:
     name: Coverage
     uses: Informasjonsforvaltning/workflows/.github/workflows/coverage-nox.yaml@main
     with:
-      python_version: '3.9'
+      python_version: "3.10"
       python_architecture: x64
       sessions: integration_tests
       nox_env: True
@@ -26,8 +26,9 @@ jobs:
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
     with:
       app_name: static-rdf-server
-      python_version: '3.9'
+      python_version: "3.10"
       python_architecture: x64
+      node_version: 16
       environment: staging
       cluster: digdir-fdk-dev
       nox_image: True
