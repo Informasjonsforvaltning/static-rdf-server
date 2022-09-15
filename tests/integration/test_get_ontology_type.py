@@ -14,8 +14,10 @@ async def test_get_ontology_type(client: Any, fs: Any) -> None:
         '<html lang="en">'
         "<title>Examples</title>"
         "<body>"
-        "<p><b>Examples</b></p>"
-        '<p> - <a href="examples/hello-world">hello-world</a></p>'
+        "<h2>Examples</h2>"
+        "<ul>"
+        '<li><a href="examples/hello-world">hello-world</a></li>'
+        "</ul>"
         "</body>"
     )
 

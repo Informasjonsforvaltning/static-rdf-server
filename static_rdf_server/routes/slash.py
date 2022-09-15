@@ -44,11 +44,13 @@ async def generate_html_document(ontology_types: List[str]) -> str:
     html_statements.append('<html lang="nb">')
     html_statements.append("<title>Ontologi-typer</title>")
     html_statements.append("<body>")
-    html_statements.append("<p>Typer</p>")
+    html_statements.append("<h2>Typer</h2>")
+    html_statements.append("<ul>")
     for ontology_type in ontology_types:
         html_statements.append(
-            f'<p> - <a href="{ontology_type}">{ontology_type}</a></p>'
+            f'<li><a href="{ontology_type}">{ontology_type}</a></li>'
         )
+    html_statements.append("</ul>")
     html_statements.append("</body>")
 
     # Concatenates all the statments into a string:

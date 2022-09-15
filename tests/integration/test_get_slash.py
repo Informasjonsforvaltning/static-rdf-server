@@ -13,8 +13,10 @@ async def test_get_slash(client: Any, fs: Any) -> None:
         '<html lang="nb">'
         "<title>Ontologi-typer</title>"
         "<body>"
-        "<p>Typer</p>"
-        '<p> - <a href="examples">examples</a></p>'
+        "<h2>Typer</h2>"
+        "<ul>"
+        '<li><a href="examples">examples</a></li>'
+        "</ul>"
         "</body>"
     )
 
