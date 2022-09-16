@@ -5,8 +5,16 @@ from textwrap import dedent
 from typing import Any, List
 
 from aiohttp import hdrs, web
-from content_negotiation import decide_content_type, NoAgreeableContentTypeError
+from content_negotiation import (
+    decide_content_type,
+    decide_language,
+    NoAgreeableContentTypeError,
+    NoAgreeableLanguageError,
+)
 from multidict import MultiDict
+
+SUPPORTED_CONTENT_TYPES = ["text/html"]
+SUPPORTED_LANGUAGES = ["nb", "nn", "en"]
 
 
 async def put_ontology_type(request: web.Request) -> web.Response:
@@ -42,9 +50,17 @@ async def get_ontology_type(request: web.Request) -> web.Response:
     try:
         content_type = decide_content_type(
             request.headers.getall(hdrs.ACCEPT, []),
-            supported_content_types=["text/html"],
+            supported_content_types=SUPPORTED_CONTENT_TYPES,
         )
     except NoAgreeableContentTypeError as e:
+        raise web.HTTPNotAcceptable() from e
+
+    try:
+        content_language = decide_language(
+            request.headers.getall(hdrs.ACCEPT_LANGUAGE, []),
+            supported_languages=SUPPORTED_LANGUAGES,
+        )
+    except NoAgreeableLanguageError as e:
         raise web.HTTPNotAcceptable() from e
 
     data_root = request.app["DATA_ROOT"]
@@ -61,13 +77,15 @@ async def get_ontology_type(request: web.Request) -> web.Response:
         status = 404
     else:
         # Generate html with the list as body:
-        body = await generate_html_document(ontology_type, ontologies)
+        body = await generate_html_document(ontology_type, ontologies, content_language)
         status = 200
 
     return web.Response(text=body, headers=headers, status=status)
 
 
-async def generate_html_document(ontology_type: str, ontologies: List[str]) -> str:
+async def generate_html_document(
+    ontology_type: str, ontologies: List[str], lang: str
+) -> str:
     """Based on list of ontologies, generate a html-document."""
     html_statements: List[str] = []
 
@@ -76,7 +94,7 @@ async def generate_html_document(ontology_type: str, ontologies: List[str]) -> s
 
     # Generate the statements:
     html_statements.append("<!doctype html>")
-    html_statements.append('<html lang="en">')
+    html_statements.append(f'<html lang="{lang}">')
     html_statements.append(f"<title>{ontology_type.title()}</title>")
     html_statements.append("<body>")
     html_statements.append(f"<h2>{ontology_type.title()}</h2>")

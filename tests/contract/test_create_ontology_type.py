@@ -63,10 +63,7 @@ async def test_create_ontology_type_specifications(http_service: Any) -> None:
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
-        assert response.status == 200
-        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
-        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
-        assert body
+        assert response.status == 406
 
         # Get html-representations: default language
         headers = {hdrs.ACCEPT: "text/html"}
@@ -135,10 +132,7 @@ async def test_create_ontology_type_vocabularies(http_service: Any) -> None:
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
         async with session.get(url, headers=headers) as response:
             body = await response.text()
-        assert response.status == 200
-        assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
-        assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
-        assert body
+        assert response.status == 406
 
         # Get html-representations: default language
         headers = {hdrs.ACCEPT: "text/html"}

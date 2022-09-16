@@ -4,7 +4,7 @@
 describe('ontologies specifications, language = default', () => {
   it('displays correct title and content', () => {
     cy.visit('http://localhost:8080/specifications')
-    cy.get('html[lang="en"]').should('exist');
+    cy.get('html[lang="nb"]').should('exist');
     cy.title().should('eq', 'Specifications')
     cy.get("h2").first().contains("Specifications");
     cy.get('ul').children().should('have.length', 1);
