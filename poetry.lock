@@ -176,7 +176,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "certifi"
-version = "2022.6.15.2"
+version = "2022.9.14"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -1241,7 +1241,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.11"
-content-hash = "9f1fc7b0a461bd9b43cca05b9b3c18480fd3c9fd990c32d5ae6252422c111d21"
+content-hash = "5e22117bbdb02f9b63bec629e55824b073dd0a74584c105a71bb6454bac12d41"
 
 [metadata.files]
 aiohttp = [
@@ -1394,8 +1394,8 @@ black = [
     {file = "black-22.8.0.tar.gz", hash = "sha256:792f7eb540ba9a17e8656538701d3eb1afcb134e3b45b71f20b25c77a8db7e6e"},
 ]
 certifi = [
-    {file = "certifi-2022.6.15.2-py3-none-any.whl", hash = "sha256:0aa1a42fbd57645fabeb6290a7687c21755b0344ecaeaa05f4e9f6207ae2e9a8"},
-    {file = "certifi-2022.6.15.2.tar.gz", hash = "sha256:aa08c101214127b9b0472ca6338315113c9487d45376fd3e669201b477c71003"},
+    {file = "certifi-2022.9.14-py3-none-any.whl", hash = "sha256:e232343de1ab72c2aa521b625c80f699e356830fd0e2c620b465b304b17b0516"},
+    {file = "certifi-2022.9.14.tar.gz", hash = "sha256:36973885b9542e6bd01dea287b2b4b3b21236307c56324fcc3f1160f2d655ed5"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
