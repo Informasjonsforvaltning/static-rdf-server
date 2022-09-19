@@ -66,21 +66,23 @@ async def get_ontology_type(request: web.Request) -> web.Response:
     data_root = request.app["DATA_ROOT"]
     ontology_type_path = os.path.join(data_root, ontology_type)
 
-    # Read content of data-root, and map all folders to a list of ontology_types:
+    # If the ontology-type does not exist, return 404:
+    if not os.path.exists(ontology_type_path):
+        headers = MultiDict(
+            [(hdrs.CONTENT_TYPE, "text/html"), (hdrs.CONTENT_LANGUAGE, "en")]
+        )
+        body: str = await generate_html_not_found()
+        return web.Response(text=body, headers=headers, status=404)
+
+    # Read content of data-root, and map all folders to a list of ontologies:
     ontologies: List[Any] = next(os.walk(ontology_type_path), (None, [], None))[1]
+
+    # Generate html with the list as body and return:
     headers = MultiDict(
         [(hdrs.CONTENT_TYPE, content_type), (hdrs.CONTENT_LANGUAGE, "en")]
     )
-    if len(ontologies) == 0:
-        # We have no ontologies, so we return a 404:
-        body = await generate_html_not_found()
-        status = 404
-    else:
-        # Generate html with the list as body:
-        body = await generate_html_document(ontology_type, ontologies, content_language)
-        status = 200
-
-    return web.Response(text=body, headers=headers, status=status)
+    body = await generate_html_document(ontology_type, ontologies, content_language)
+    return web.Response(text=body, headers=headers, status=200)
 
 
 async def generate_html_document(
