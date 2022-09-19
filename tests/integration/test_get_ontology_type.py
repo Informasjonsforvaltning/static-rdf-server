@@ -77,7 +77,7 @@ async def test_get_ontology_type_unsupported_language(client: Any, fs: Any) -> N
 
 @pytest.mark.integration
 async def test_get_ontology_type_that_does_not_exist(client: Any, fs: Any) -> None:
-    """Should return status 200 OK and html document."""
+    """Should return status 404 OK and html document."""
     expected = dedent(
         """
         <!doctype html>
@@ -98,6 +98,35 @@ async def test_get_ontology_type_that_does_not_exist(client: Any, fs: Any) -> No
     response = await client.get(f"/{ontology_type}", headers=headers)
 
     assert response.status == 404
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+    assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
+
+    text = await response.text()
+    assert text == expected
+
+
+@pytest.mark.integration
+async def test_get_ontology_type_with_no_ontologies(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and html document."""
+    expected = (
+        "<!doctype html>"
+        '<html lang="nb">'
+        "<title>Is_Empty</title>"
+        "<body>"
+        "<h2>Is_Empty</h2>"
+        "<ul></ul>"
+        "</body>"
+    )
+
+    ontology_type = "is_empty"
+    fs.create_file(
+        f"/srv/www/static-rdf-server/data/{ontology_type}/",
+    )
+
+    headers = {hdrs.ACCEPT: "text/html"}
+    response = await client.get(f"/{ontology_type}", headers=headers)
+
+    assert response.status == 200
     assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
 
