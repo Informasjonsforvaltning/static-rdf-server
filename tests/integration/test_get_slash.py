@@ -13,8 +13,10 @@ async def test_get_slash(client: Any, fs: Any) -> None:
         '<html lang="nb">'
         "<title>Ontologi-typer</title>"
         "<body>"
-        "<p>Typer</p>"
-        '<p> - <a href="examples">examples</a></p>'
+        "<h2>Ontologi-typer</h2>"
+        "<ul>"
+        '<li><a href="examples">examples</a></li>'
+        "</ul>"
         "</body>"
     )
 
@@ -30,6 +32,18 @@ async def test_get_slash(client: Any, fs: Any) -> None:
 
     text = await response.text()
     assert text == expected
+
+
+@pytest.mark.integration
+async def test_get_slash_language_not_supported(client: Any, fs: Any) -> None:
+    """Should return status 406."""
+    ontology_type = "examples"
+    fs.create_dir(f"/srv/www/static-rdf-server/data/{ontology_type}")
+
+    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "not-supported"}
+    response = await client.get("/", headers=headers)
+
+    assert response.status == 406
 
 
 @pytest.mark.integration
