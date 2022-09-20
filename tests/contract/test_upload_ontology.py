@@ -125,7 +125,9 @@ async def test_put_specification(http_service: Any) -> None:
     # ACT:
     specification_html_file = "tests/files/input/specifications/dcat-ap-no/index.html"
     logo_file = "tests/files/input/specifications/dcat-ap-no/images/digitaliseringsdirektoratet.png"
-    model_image = "tests/files/input/specifications/dcat-ap-no/images/model_image.png"
+    model_image = (
+        "tests/files/input/specifications/dcat-ap-no/images/DCAT-AP-NO2_20210903.png"
+    )
     pdf_file = "tests/files/input/specifications/dcat-ap-no/files/dcat-ap-no.pdf"
     # model_file = (
     #     "tests/files/input/specifications/dcat-ap-no/files/DCAT-AP-NO2_20210903.eap"
