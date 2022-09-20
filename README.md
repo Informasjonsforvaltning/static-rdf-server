@@ -14,7 +14,7 @@ The server supports all of the "standard" serializations of RDF:
 Say you want to upload two files to your ontology of ontology-type "vocabulary".
 
 ```shell
-% curl -i \ 
+% curl -i \
  -H "X-API-KEY: supersecretapikey" \
  -F "ontology-rdf-file=@tests/files/input/hello-world.ttl;type=text/turtle" \
  -F "ontology-html-file=@tests/files/input/hello-world-en.html;type=text/html;headers=\"content-language: en\"" \
@@ -22,6 +22,19 @@ Say you want to upload two files to your ontology of ontology-type "vocabulary".
 ```
 
 If the ontology exists, it will be updated. Otherwise it will be created.
+
+In case you want to upload a more complex folder structure, you need to use the desired relative path of file as a parameter:
+
+```shell
+% curl -i \
+ -H "X-API-KEY: supersecretapikey" \
+ -F "specification-html-file=@tests/files/input/specifications/dcat-ap-no/index.html;type=text/html;headers=\"content-language: nb\"" \
+ -F "specification-pdf-file=@tests/files/input/specifications/dcat-ap-no/files/dcat-ap-no.pdf;type=application/pdf;filename=files/dcat-ap-no.pdf;headers=\"content-language: nb\"" \
+ -F "specification-eap-file=@tests/files/input/specifications/dcat-ap-no/files/DCAT-AP-NO2_20210903.eap;type=application/octet-stream;filename=files/DCAT-AP-NO2_20210903.eap;headers=\"content-language: nb\"" \
+ -F "specification-logo-image=@tests/files/input/specifications/dcat-ap-no/images/digitaliseringsdirektoratet.png;type=image/png;filename=images/digitaliseringsdirektoratet.png" \
+ -F "specification-model-image=@tests/files/input/specifications/dcat-ap-no/images/DCAT-AP-NO2_20210903.png;type=image/png;filename=images/DCAT-AP-NO2_20210903.png" \
+ -X PUT http://localhost:8080/specifications/dcat-ap-no
+```
 
 ### To get content from the server
 
