@@ -129,9 +129,9 @@ async def test_put_specification(http_service: Any) -> None:
         "tests/files/input/specifications/dcat-ap-no/images/DCAT-AP-NO2_20210903.png"
     )
     pdf_file = "tests/files/input/specifications/dcat-ap-no/files/dcat-ap-no.pdf"
-    # model_file = (
-    #     "tests/files/input/specifications/dcat-ap-no/files/DCAT-AP-NO2_20210903.eap"
-    # )
+    model_file = (
+        "tests/files/input/specifications/dcat-ap-no/files/DCAT-AP-NO2_20210903.eap"
+    )
 
     with MultipartWriter("mixed") as mpwriter:
         # add the HTML-representations: nb
@@ -172,15 +172,15 @@ async def test_put_specification(http_service: Any) -> None:
         p.headers[hdrs.CONTENT_TYPE] = "application/pdf"
         p.headers[hdrs.CONTENT_LANGUAGE] = "en"
 
-        # # add a eap-file:
-        # p = mpwriter.append(open(model_file, "rb"))
-        # p.set_content_disposition(
-        #     "attachment",
-        #     name="specification-eap-file",
-        #     filename="files/DCAT-AP-NO2_20210903.eap",
-        # )
-        # p.headers[hdrs.CONTENT_TYPE] = "application/octet-stream"
-        # p.headers[hdrs.CONTENT_LANGUAGE] = "en"
+        # add an eap-file:
+        p = mpwriter.append(open(model_file, "rb"))
+        p.set_content_disposition(
+            "attachment",
+            name="specification-eap-file",
+            filename="files/DCAT-AP-NO2_20210903.eap",
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "application/octet-stream"
+        p.headers[hdrs.CONTENT_LANGUAGE] = "en"
 
     ontology_type = "specifications"
     ontology = "dcat-ap-no"
