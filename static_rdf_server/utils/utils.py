@@ -67,7 +67,16 @@ async def valid_file_content(file_extension: str, file_content: Any) -> None:
 
 async def valid_file_extension(file_extension: str) -> bool:
     """Return True if valid file-extension."""
-    return file_extension.lower() in ["ttl", "html", "png", "pdf", "eap", "xsd", "jpg"]
+    return file_extension.lower() in [
+        "ttl",
+        "html",
+        "png",
+        "pdf",
+        "eap",
+        "xsd",
+        "jpg",
+        "docx",
+    ]
 
 
 async def valid_content_type(content_type: str) -> bool:
@@ -80,6 +89,7 @@ async def valid_content_type(content_type: str) -> bool:
         "application/octet-stream",
         "text/xml",
         "image/jpeg",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ]:
         return True
 
