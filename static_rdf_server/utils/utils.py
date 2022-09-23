@@ -76,6 +76,7 @@ async def valid_file_extension(file_extension: str) -> bool:
         "xsd",
         "jpg",
         "docx",
+        "eapx",
     ]
 
 
