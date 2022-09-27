@@ -52,7 +52,7 @@ In case you want to upload a more complex folder structure, you need to use the 
 ### To create a new type
 
 ```Shell
-% curl -H "X-API-KEY: supersecretapikey" -H "Content-type: application/json" -X PUT --data '{"type":"specification"}' http://localhost:8080/specification
+% curl -H "X-API-KEY: supersecretapikey" -H "Content-type: application/json" -X PUT --data '{"type":"specifications"}' http://localhost:8080/specifications
 ```
 
 ## Location of ontology files
