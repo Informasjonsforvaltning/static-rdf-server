@@ -124,7 +124,7 @@ async def test_put_specification(http_service: Any) -> None:
     """Should return 204 No content."""
     # ACT:
     specification_html_file = "tests/files/input/specifications/dcat-ap-no/index.html"
-    logo_file = "tests/files/input/specifications/dcat-ap-no/images/digitaliseringsdirektoratet.png"
+    logo_image = "tests/files/input/specifications/dcat-ap-no/images/digitaliseringsdirektoratet.png"
     model_image = (
         "tests/files/input/specifications/dcat-ap-no/images/DCAT-AP-NO2_20210903.png"
     )
@@ -145,7 +145,7 @@ async def test_put_specification(http_service: Any) -> None:
         p.headers[hdrs.CONTENT_LANGUAGE] = "nb"
 
         # add an image-representations:
-        p = mpwriter.append(open(logo_file, "rb"))
+        p = mpwriter.append(open(model_image, "rb"))
         p.set_content_disposition(
             "attachment",
             name="image",
@@ -154,7 +154,7 @@ async def test_put_specification(http_service: Any) -> None:
         p.headers[hdrs.CONTENT_TYPE] = "image/png"
 
         # add an image-representations:
-        p = mpwriter.append(open(model_image, "rb"))
+        p = mpwriter.append(open(logo_image, "rb"))
         p.set_content_disposition(
             "attachment",
             name="image",
