@@ -78,6 +78,7 @@ async def valid_file_extension(file_extension: str) -> bool:
         "docx",
         "eapx",
         "epub",
+        "uxf",
     ]
 
 
@@ -93,6 +94,7 @@ async def valid_content_type(content_type: str) -> bool:
         "image/jpeg",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "application/epub+zip",
+        "text/xml",
     ]:
         return True
 
