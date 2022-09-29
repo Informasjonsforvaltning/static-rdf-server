@@ -1,5 +1,5 @@
 """Module for util functions."""
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from content_negotiation import (
     decide_content_type,
@@ -100,10 +100,22 @@ async def valid_content_type(content_type: str) -> bool:
 
 
 async def rewrite_links(
-    html_file: bytes, data_root: str, ontology_type: str, ontology: str
+    html_file: bytes,
+    data_root: str,
+    ontology_type: str,
+    ontology: str,
+    version: Optional[str] = None,
 ) -> bytes:
     """Rewrite relative links as absolute paths and return file."""
     _html_str = html_file.decode("utf-8")
-    html_str = _html_str.replace("images", ontology + "/images")
-    html_str = html_str.replace("files", ontology + "/files")
+    html_str = (
+        _html_str.replace("images", f"{version}/images")
+        if version
+        else _html_str.replace("images", f"{ontology}/images")
+    )
+    html_str = (
+        html_str.replace("files", f"{version}/files")
+        if version
+        else html_str.replace("files", f"{ontology}/files")
+    )
     return html_str.encode("utf-8")

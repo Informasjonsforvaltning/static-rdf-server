@@ -2,7 +2,7 @@
 import logging
 import os
 import shutil
-from typing import List
+from typing import List, Optional
 from urllib.parse import unquote
 
 from aiohttp import hdrs, web
@@ -54,11 +54,22 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         ) from None
 
     ontology = request.match_info["ontology"]
+    version: Optional[str] = None
+    try:
+        version = request.match_info["version"]
+        logging.debug(f"Got put request for: {ontology_type}/{ontology}/{version}.")
+    except KeyError:
+        pass
+        logging.debug(f"Got put request for: {ontology_type}/{ontology}.")
+
     extension: str
-    logging.debug(f"Got put request{ontology_type}/{ontology}.")
 
     # Decide status_code:
-    destination = os.path.join(data_root, ontology_type, ontology)
+    destination = (
+        os.path.join(data_root, ontology_type, ontology, version)
+        if version
+        else os.path.join(data_root, ontology_type, ontology)
+    )
     if os.path.exists(destination):
         status_code = 204
     else:
@@ -118,16 +129,24 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         # For html-files We need to rewrite links to sub-folders:
         if "text/html" in part.headers[hdrs.CONTENT_TYPE]:
             ontology_file_decoded = await rewrite_links(
-                ontology_file_decoded, data_root, ontology_type, ontology
+                ontology_file_decoded, data_root, ontology_type, ontology, version
             )
 
-        # Decide and create destination folder:
+        # Decide and create ontology path:
         if extension in ["html", "ttl"]:
-            destination = os.path.join(data_root, ontology_type, ontology)
+            ontology_path = (
+                os.path.join(data_root, ontology_type, ontology, version)
+                if version
+                else os.path.join(data_root, ontology_type, ontology)
+            )
         else:
-            destination = os.path.join(static_root, ontology_type, ontology)
-        if not os.path.exists(destination):
-            os.makedirs(destination)
+            ontology_path = (
+                os.path.join(static_root, ontology_type, ontology, version)
+                if version
+                else os.path.join(static_root, ontology_type, ontology)
+            )
+        if not os.path.exists(ontology_path):
+            os.makedirs(ontology_path)
 
         # Decide sub-folders:
         sub_folders: List[str]
@@ -135,11 +154,11 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             _filename = unquote(part.filename)
             sub_folders = _filename.split(os.sep)
             for folder in sub_folders[:-1]:
-                destination = os.path.join(destination, folder)
+                ontology_path = os.path.join(ontology_path, folder)
 
         # Create sub-folders:
-        if not os.path.exists(destination):
-            os.makedirs(destination)
+        if not os.path.exists(ontology_path):
+            os.makedirs(ontology_path)
 
         # For html and RDF create filename:
         filename: str
@@ -155,7 +174,7 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
                 filename = f"{ontology}.{extension}"
 
         # Write file to path:
-        path = os.path.join(destination, filename)
+        path = os.path.join(ontology_path, filename)
         logging.debug(f"Writing to path: {path}.")
         with open(path, "wb") as file:
             file.write(ontology_file_decoded)
@@ -172,11 +191,23 @@ async def get_ontology(request: web.Request) -> web.Response:
     default_language = request.app["DEFAULT_LANGUAGE"]
     ontology_type = request.match_info["ontology_type"]
     ontology = request.match_info["ontology"]
-
-    logging.debug(f"Got request for type/folder/file {ontology_type}/{ontology}")
+    version: Optional[str] = None
+    try:
+        version = request.match_info["version"]
+        logging.debug(
+            f"Got request for type/ontology/version: {ontology_type}/{ontology}/{version}"
+        )
+    except KeyError:
+        pass
+        logging.debug(f"Got request for type/ontology: {ontology_type}/{ontology}")
 
     # First we check if the ontology exist:
-    ontology_path = os.path.join(data_root, ontology_type, ontology)
+    ontology_path = (
+        os.path.join(data_root, ontology_type, ontology, version)
+        if version
+        else os.path.join(data_root, ontology_type, ontology)
+    )
+
     logging.debug(f"Looking for ontology_path: {ontology_path}")
     if not os.path.exists(ontology_path):
         raise web.HTTPNotFound()
@@ -201,7 +232,7 @@ async def get_ontology(request: web.Request) -> web.Response:
         filename = f"{ontology}.{extension}"
 
     # Try to get exact match on language:
-    full_path = os.path.join(data_root, ontology_type, ontology, filename)
+    full_path = os.path.join(ontology_path, filename)
     logging.debug(f"Looking for full_path: {full_path}")
     if os.path.exists(full_path):
         with open(full_path, "r") as f:
@@ -214,12 +245,11 @@ async def get_ontology(request: web.Request) -> web.Response:
     # For html-requests, if not found, we return the representation in the default langauge:
     if content_type == "text/html":
         filename = f"{ontology}-{default_language}.{extension}"
-        full_path = os.path.join(data_root, ontology_type, ontology, filename)
+        full_path = os.path.join(ontology_path, filename)
         logging.debug(f"Looking for fall-back full_path: {full_path}")
         if os.path.exists(full_path):
             with open(full_path, "r") as f:
                 body = f.read()
-                logging.debug(f"Is about to return body: {body}")
             headers = MultiDict([(hdrs.CONTENT_LANGUAGE, default_language)])
             return web.Response(text=body, headers=headers, content_type=content_type)
 
@@ -238,12 +268,23 @@ async def delete_ontology(request: web.Request) -> web.Response:
 
     ontology_type = request.match_info["ontology_type"]
     ontology = request.match_info["ontology"]
+    version: Optional[str] = None
+    try:
+        version = request.match_info["version"]
+    except KeyError:
+        pass
 
-    logging.debug(f"Got request for folder/file {ontology_type}/{ontology}")
+    logging.debug(
+        f"Got delete request for folder/file {ontology_type}/{ontology}/{version}"
+    )
     logging.debug(f"Got request-headers: {request.headers}")
 
     # First we check if the ontology exist:
-    ontology_path = os.path.join(data_root, ontology_type, ontology)
+    ontology_path = (
+        os.path.join(data_root, ontology_type, ontology, version)
+        if version
+        else os.path.join(data_root, ontology_type, ontology)
+    )
     logging.debug(f"Trying to delete ontology with path: {ontology_path}")
     if not os.path.exists(ontology_path):
         raise web.HTTPNotFound()
@@ -251,7 +292,12 @@ async def delete_ontology(request: web.Request) -> web.Response:
     shutil.rmtree(ontology_path)
 
     # We also need to remove static files, if they exist:
-    static_path = os.path.join(static_root, ontology_type, ontology)
+    static_path = (
+        os.path.join(static_root, ontology_type, ontology, version)
+        if version
+        else os.path.join(static_root, ontology_type, ontology)
+    )
+    logging.debug(f"Trying to delete static files with path: {static_path}")
     if os.path.exists(static_path):
         shutil.rmtree(static_path)
 

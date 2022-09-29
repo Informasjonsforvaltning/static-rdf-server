@@ -92,6 +92,94 @@ async def test_put_ontology_when_ontology_does_not_exist(client: Any, fs: Any) -
 
 
 @pytest.mark.integration
+async def test_put_ontology_when_ontology_does_not_exist_given_version(
+    client: Any, fs: Any
+) -> None:
+    """Should return status 201 Created and location header."""
+    data_root = "/srv/www/static-rdf-server/data"
+    ontology_type = "examples"
+    ontology = "hello-world"
+    version = "v1"
+
+    fs.create_dir(f"{data_root}/{ontology_type}/{version}")
+
+    rdf_file = f"{ontology}.ttl"
+    rdf_content = '<http://example.com/drewp> <http://example.com/says> "Hello World" .'
+    fs.create_file(
+        rdf_file,
+        contents=rdf_content,
+    )
+    html_file = f"{ontology}.html"
+    html_content = '<p>Server says "Hello, world!"</p>'
+    fs.create_file(
+        html_file,
+        contents=html_content,
+    )
+    image_file = os.path.join("images", f"{ontology}.png")
+    fs.create_file(
+        image_file,
+    )
+    pdf_file = os.path.join("files", f"{ontology}.pdf")
+    fs.create_file(
+        pdf_file,
+    )
+
+    with open(rdf_file, "rb") as file:
+        ontology_rdf = file.read()
+    with open(html_file, "rb") as file:
+        ontology_html = file.read()
+    with open(image_file, "rb") as file:
+        ontology_png = file.read()
+    with open(pdf_file, "rb") as file:
+        ontology_pdf = file.read()
+
+    with MultipartWriter("mixed") as mpwriter:
+        # add the RDF-representation
+        p = mpwriter.append(ontology_rdf)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-rdf-file",
+            filename=rdf_file,
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "text/turtle"
+        # add the HTML-representation
+        p = mpwriter.append(ontology_html)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-html-file",
+            filename=html_file,
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "text/html"
+        p.headers[hdrs.CONTENT_LANGUAGE] = "en"
+        # add an image:
+        p = mpwriter.append(ontology_png)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-png-file",
+            filename=image_file,
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "image/png"
+        # add a pdf file
+        p = mpwriter.append(ontology_pdf)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-pdf-file",
+            filename=pdf_file,
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "application/pdf"
+
+    headers = {
+        "X-API-KEY": os.getenv("API_KEY", None),
+    }
+    response = await client.put(
+        f"/{ontology_type}/{ontology}/{version}", headers=headers, data=mpwriter
+    )
+
+    assert response.status == 201
+    assert f"{ontology_type}/{ontology}" == response.headers[hdrs.LOCATION]
+
+
+@pytest.mark.integration
 async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> None:
     """Should return status 204 No Content."""
     data_root = "/srv/www/static-rdf-server/data"
