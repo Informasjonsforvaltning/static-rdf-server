@@ -168,6 +168,33 @@ async def test_get_html_en_language(client: Any, fs: Any) -> None:
 
 
 @pytest.mark.integration
+async def test_get_default_given_version(client: Any, fs: Any) -> None:
+    """Should return status 200 OK and body as html."""
+    contents_nb = """
+    <!doctype html>
+    <html lang="nb">
+    <title>Hallo verden</title>
+
+    <body>
+        <p>Hallo, verden!</p>
+        <p>Denne hilsen ble sist oppdatert 2022-02-04 14:20:00.</p>
+    """
+    fs.create_file(
+        "/srv/www/static-rdf-server/data/ontology-type-1/ontology-1/v1/ontology-1-nb.html",
+        contents=contents_nb,
+    )
+
+    response = await client.get("/ontology-type-1/ontology-1/v1")
+
+    assert response.status == 200
+    assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+    assert "nb" == response.headers[hdrs.CONTENT_LANGUAGE]
+    document = await response.text()
+    assert '<html lang="nb">' in document
+    assert document == contents_nb
+
+
+@pytest.mark.integration
 async def test_get_accept_not_acceptable(client: Any, fs: Any) -> None:
     """Should return status 406 Not Acceptable."""
     contents_en = '<p>Server says "Hello, world!"</p>'

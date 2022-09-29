@@ -45,8 +45,11 @@ async def create_app() -> web.Application:
     app.router.add_get("/{ontology_type}", get_ontology_type)
     app.router.add_put("/{ontology_type}", put_ontology_type)
     app.router.add_get("/{ontology_type}/{ontology}", get_ontology)
+    app.router.add_get("/{ontology_type}/{ontology}/{version}", get_ontology)
     app.router.add_put("/{ontology_type}/{ontology}", put_ontology)
+    app.router.add_put("/{ontology_type}/{ontology}/{version}", put_ontology)
     app.router.add_delete("/{ontology_type}/{ontology}", delete_ontology)
+    app.router.add_delete("/{ontology_type}/{ontology}/{version}", delete_ontology)
 
     async def app_context(app: Any) -> Any:
         # Set up context:

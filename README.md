@@ -147,9 +147,16 @@ A minimal .env:
 ```shell
 LOGGING_LEVEL=DEBUG
 API_KEY=supersecretapikey
+SERVER_ROOT=tests/files/workspace
+DATA_ROOT=tests/files/workspace/data
+STATIC_ROOT=tests/files/workspace/static
 ```
 
-### Run i development-mode
+## Start service
+
+For all of the following scenarios, except in docker-compose, you will run without nginx. This will result in 404 on static files, but the API will work.
+
+### Run in development-mode
 
 ```shell
 % poetry run adev runserver -p 8080 --aux-port 8089 static_rdf_server
@@ -170,13 +177,13 @@ To build and run the api in a Docker container:
 % docker run --env-file .env -p 8080:8080 -d static-rdf-server:latest
 ```
 
-The easier way would be with docker-compose:
+### Running both the API and the static web server in docker-compose
+
+The easiest way to run both services, would be with docker-compose:
 
 ```shell
 docker-compose up --build
 ```
-
-If all goes well you should receive a 201 Created status-code and a relative URL to your content in the Location-header.
 
 ## Testing
 
