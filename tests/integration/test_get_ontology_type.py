@@ -9,18 +9,6 @@ import pytest
 @pytest.mark.integration
 async def test_get_ontology_type_language_en(client: Any, fs: Any) -> None:
     """Should return status 200 OK and html document."""
-    expected = (
-        "<!doctype html>"
-        '<html lang="en">'
-        "<title>Examples</title>"
-        "<body>"
-        "<h2>Examples</h2>"
-        "<ul>"
-        '<li><a href="examples/hello-world">hello-world</a></li>'
-        "</ul>"
-        "</body>"
-    )
-
     ontology_type = "examples"
     ontology = "hello-world"
     fs.create_dir(f"/srv/www/static-rdf-server/data/{ontology_type}")
@@ -44,9 +32,6 @@ async def test_get_ontology_type_language_en(client: Any, fs: Any) -> None:
     assert response.status == 200
     assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
     assert "en" == response.headers[hdrs.CONTENT_LANGUAGE]
-
-    text = await response.text()
-    assert text == expected
 
 
 @pytest.mark.integration

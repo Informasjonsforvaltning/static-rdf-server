@@ -1,8 +1,9 @@
 """Module for ontology route."""
+import datetime
 import logging
 import os
 from textwrap import dedent
-from typing import Any, List
+from typing import Any, List, Tuple
 
 from aiohttp import hdrs, web
 from content_negotiation import (
@@ -75,7 +76,15 @@ async def get_ontology_type(request: web.Request) -> web.Response:
         return web.Response(text=body, headers=headers, status=404)
 
     # Read content of data-root, and map all folders to a list of ontologies:
-    ontologies: List[Any] = next(os.walk(ontology_type_path), (None, [], None))[1]
+    ontology_names: List[Any] = next(os.walk(ontology_type_path), (None, [], None))[1]
+    ontologies: List[Tuple[str, str]] = []
+    for o in ontology_names:
+        ontology_path = os.path.join(ontology_type_path, o)
+        ts_epoch = os.path.getmtime(ontology_path)
+        last_modified = datetime.datetime.fromtimestamp(ts_epoch).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+        ontologies.append((o, last_modified))
 
     # Generate html with the list as body and return:
     headers = MultiDict(
@@ -86,7 +95,7 @@ async def get_ontology_type(request: web.Request) -> web.Response:
 
 
 async def generate_html_document(
-    ontology_type: str, ontologies: List[str], lang: str
+    ontology_type: str, ontologies: List[Tuple[str, str]], lang: str
 ) -> str:
     """Based on list of ontologies, generate a html-document."""
     html_statements: List[str] = []
@@ -101,9 +110,9 @@ async def generate_html_document(
     html_statements.append("<body>")
     html_statements.append(f"<h2>{ontology_type.title()}</h2>")
     html_statements.append("<ul>")
-    for ontology in ontologies:
+    for (ontology, last_modified) in ontologies:
         html_statements.append(
-            f'<li><a href="{ontology_type}/{ontology}">{ontology}</a></li>'
+            f'<li><a href="{ontology_type}/{ontology}">{ontology}</a>\tlast updated: {last_modified}</li>'
         )
     html_statements.append("</ul>")
     html_statements.append("</body>")
