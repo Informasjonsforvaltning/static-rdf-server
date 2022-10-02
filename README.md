@@ -5,7 +5,9 @@ Simple server that will serve ontologies in either html or RDF based on accept-h
 The server supports all of the "standard" serializations of RDF:
 
 - turtle (text/turtle)
-- TBD
+- notation3 (text/n3)
+- json-ld (application/ld+json)
+- rdf/xml (application/rdf+xml)
 
 ## Usage
 
@@ -39,7 +41,8 @@ In case you want to upload a more complex folder structure, you need to use the 
 ### To get content from the server
 
 ```shell
-% curl -H "Accept: text/turtle" http://localhost:8080/examples/hello-world  # will return a hello-world RDF document
+% curl -H "Accept: text/turtle" http://localhost:8080/examples/hello-world  # will return a hello-world RDF document, turtle format
+% curl -H "Accept: application/rdf+xml" http://localhost:8080/examples/hello-world  # will return a hello-world RDF document, xml format
 % curl -H  http://localhost:8080/examples/hello-world  # will return a hello-world HTML document
 ```
 

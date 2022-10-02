@@ -7,6 +7,7 @@ from urllib.parse import unquote
 
 from aiohttp import hdrs, web
 from multidict import MultiDict
+from rdflib import Graph
 
 from static_rdf_server.utils import (
     ContentTypeNotSupportedException,
@@ -17,24 +18,12 @@ from static_rdf_server.utils import (
     valid_file_content,
     valid_file_extension,
 )
-
-# Default is first in list:
-SUPPORTED_CONTENT_TYPES: List[str] = [
-    "text/html",
-    "text/turtle",
-]
-
-# Default is first in list:
-SUPPORTED_LANGUAGES: List[str] = ["nb", "nb-NO", "nn", "nn-NO", "en", "en-GB"]
-
-LANGUAGE_FILE_SUFFIX = {
-    "nb": "nb",
-    "nb-NO": "nb",
-    "nn": "nn",
-    "nn-NO": "nn",
-    "en": "en",
-    "en-GB": "en",
-}
+from static_rdf_server.utils.config import (
+    LANGUAGE_FILE_SUFFIX,
+    RDF_CONTENT_TYPES,
+    SUPPORTED_CONTENT_TYPES,
+    SUPPORTED_LANGUAGES,
+)
 
 
 async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
@@ -62,8 +51,6 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         pass
         logging.debug(f"Got put request for: {ontology_type}/{ontology}.")
 
-    extension: str
-
     # Decide status_code:
     destination = (
         os.path.join(data_root, ontology_type, ontology, version)
@@ -81,11 +68,12 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         content_language: str = ""
 
         # Validate headers:
+        content_type: Optional[str] = None
         try:
             content_type = part.headers[hdrs.CONTENT_TYPE]
             if not (await valid_content_type(content_type)):
                 raise web.HTTPUnsupportedMediaType(
-                    reason=f"Not supported content-type {content_type}."
+                    reason=f"Not supported content-type '{content_type}'."
                 )
         except KeyError:
             raise web.HTTPBadRequest(
@@ -93,7 +81,7 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             ) from None
 
         # For html we check that the content-language header is set:
-        if "text/html" in part.headers[hdrs.CONTENT_TYPE]:
+        if "text/html" in content_type:
             if not part.headers.get(hdrs.CONTENT_LANGUAGE):
                 raise web.HTTPBadRequest(
                     reason="For html-content, Content-Language header must be given."
@@ -101,11 +89,12 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             content_language = part.headers[hdrs.CONTENT_LANGUAGE]
 
         # Validate filename extension:
+        extension: str
         if part.filename:
             extension = part.filename.split(".")[-1]
             if not (await valid_file_extension(extension)):
                 raise web.HTTPBadRequest(
-                    reason=f"Not supported file-extension {extension}."
+                    reason=f"Not supported file-extension '{extension}'."
                 )
 
         # Read the file:
@@ -120,20 +109,32 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
         ontology_file_decoded: bytes
         try:
             ontology_file_decoded = part.decode(ontology_file)
-            await valid_file_content(extension, ontology_file_decoded)
+            await valid_file_content(
+                content_type, RDF_CONTENT_TYPES, ontology_file_decoded
+            )
         except NotValidFileContentException as e:
             raise web.HTTPBadRequest(
                 reason=f'Ontology file "{part.filename}" has not valid content: {str(e)}.'
             ) from e
 
         # For html-files We need to rewrite links to sub-folders:
-        if "text/html" in part.headers[hdrs.CONTENT_TYPE]:
+        if "text/html" in content_type:
             ontology_file_decoded = await rewrite_links(
                 ontology_file_decoded, data_root, ontology_type, ontology, version
             )
 
+        # For other RDF serializations than turtle, we need to convert to turtle:
+        if content_type in RDF_CONTENT_TYPES and content_type != "text/turtle":
+            ontology_file_decoded = bytes(
+                Graph()
+                .parse(data=ontology_file_decoded, format=content_type)
+                .serialize(format="turtle"),
+                "utf-8",
+            )
+            extension = "ttl"
+
         # Decide and create ontology path:
-        if extension in ["html", "ttl"]:
+        if content_type in RDF_CONTENT_TYPES + ["text/html"]:
             ontology_path = (
                 os.path.join(data_root, ontology_type, ontology, version)
                 if version
@@ -185,7 +186,7 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
     return web.Response(status=status_code, headers=headers)
 
 
-async def get_ontology(request: web.Request) -> web.Response:
+async def get_ontology(request: web.Request) -> web.Response:  # noqa: C901
     """Return default response."""
     data_root = request.app["DATA_ROOT"]
     default_language = request.app["DEFAULT_LANGUAGE"]
@@ -229,14 +230,21 @@ async def get_ontology(request: web.Request) -> web.Response:
     if content_type == "text/html" and len(content_language) > 0:
         filename = f"{ontology}-{LANGUAGE_FILE_SUFFIX[content_language]}.{extension}"
     else:
-        filename = f"{ontology}.{extension}"
+        filename = f"{ontology}.ttl"
 
     # Try to get exact match on language:
     full_path = os.path.join(ontology_path, filename)
     logging.debug(f"Looking for full_path: {full_path}")
     if os.path.exists(full_path):
         with open(full_path, "r") as f:
-            body = f.read()
+            file_content = f.read()
+
+        # For RDF we convert to the requested format:
+        if content_type in RDF_CONTENT_TYPES:
+            body = Graph().parse(data=file_content).serialize(format=content_type)
+        else:
+            body = file_content
+
         headers = MultiDict([(hdrs.CONTENT_LANGUAGE, content_language)])
         return web.Response(text=body, headers=headers, content_type=content_type)
     else:

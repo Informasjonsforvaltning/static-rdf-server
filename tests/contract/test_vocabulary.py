@@ -77,6 +77,70 @@ async def test_put_vocabulary(http_service: Any) -> None:
 
 @pytest.mark.contract
 @pytest.mark.asyncio
+async def test_put_vocabulary_xml(http_service: Any) -> None:
+    """Should return 204 No content."""
+    # ACT:
+    ontology_rdf_file = "tests/files/input/vocabularies/audience-type/audience-type.xml"
+    ontology_en_html_file = (
+        "tests/files/input/vocabularies/audience-type/audience-type-en.html"
+    )
+    ontology_nb_html_file = (
+        "tests/files/input/vocabularies/audience-type/audience-type-nb.html"
+    )
+    ontology_nn_html_file = (
+        "tests/files/input/vocabularies/audience-type/audience-type-nn.html"
+    )
+
+    with MultipartWriter("mixed") as mpwriter:
+        # add the RDF-representation
+        p = mpwriter.append(open(ontology_rdf_file, "rb"))
+        p.set_content_disposition(
+            "attachment", name="ontology-rdf-file", filename="audience-type.xml"
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "application/rdf+xml"
+
+        # add the HTML-representations: en
+        p = mpwriter.append(open(ontology_en_html_file, "rb"))
+        p.set_content_disposition(
+            "attachment", name="ontology-html-file", filename="audience-type-en.html"
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "text/html"
+        p.headers[hdrs.CONTENT_LANGUAGE] = "en"
+
+        # add the HTML-representations: nb
+        p = mpwriter.append(open(ontology_nb_html_file, "rb"))
+        p.set_content_disposition(
+            "attachment", name="ontology-html-file", filename="audience-type-nb.html"
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "text/html"
+        p.headers[hdrs.CONTENT_LANGUAGE] = "nb"
+
+        # add the HTML-representations: nn
+        p = mpwriter.append(open(ontology_nn_html_file, "rb"))
+        p.set_content_disposition(
+            "attachment", name="ontology-html-file", filename="audience-type-nn.html"
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "text/html"
+        p.headers[hdrs.CONTENT_LANGUAGE] = "nn"
+
+    ontology_type = ONTOLOGY_TYPE
+    ontology = ONTOLOGY
+    url = f"{http_service}/{ontology_type}/{ontology}"
+    headers = {
+        "X-API-KEY": os.getenv("API_KEY", None),
+    }
+    async with ClientSession() as session:
+        async with session.put(url, headers=headers, data=mpwriter) as response:
+            if response.status != 204:
+                body = await response.json()
+            pass
+
+        # ASSERT
+        assert response.status == 204, body
+
+
+@pytest.mark.contract
+@pytest.mark.asyncio
 async def test_get_ontology_vocabulary_audience_type_html(http_service: Any) -> None:
     """Should return 200 OK and a html-document."""
     ontology_type = ONTOLOGY_TYPE
@@ -159,7 +223,65 @@ async def test_get_ontology_vocabulary_audience_type_turtle(http_service: Any) -
         pass
     assert _isomorphic, "graphs are not isomorphic"
 
-    # ---------------------------------------------------------------------- #
+
+@pytest.mark.contract
+@pytest.mark.asyncio
+async def test_get_ontology_vocabulary_audience_type_ld_json(http_service: Any) -> None:
+    """Should return 200 OK and a json-ld document."""
+    content_type = "application/ld+json"
+    ontology_type = ONTOLOGY_TYPE
+    ontology = ONTOLOGY
+    url = f"{http_service}/{ontology_type}/{ontology}"
+    headers = {hdrs.ACCEPT: content_type}
+    async with ClientSession() as session:
+        async with session.get(url, headers=headers) as response:
+            document = await response.text()
+
+    assert response.status == 200
+    assert f"{content_type}; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+
+    assert Graph().parse(data=document, format=content_type)
+
+
+@pytest.mark.contract
+@pytest.mark.asyncio
+async def test_get_ontology_vocabulary_audience_type_rdf_xml(http_service: Any) -> None:
+    """Should return 200 OK and an rdf xml-document."""
+    content_type = "application/rdf+xml"
+    ontology_type = ONTOLOGY_TYPE
+    ontology = ONTOLOGY
+    url = f"{http_service}/{ontology_type}/{ontology}"
+    headers = {hdrs.ACCEPT: content_type}
+    async with ClientSession() as session:
+        async with session.get(url, headers=headers) as response:
+            document = await response.text()
+
+    assert response.status == 200
+    assert f"{content_type}; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+
+    assert Graph().parse(data=document, format=content_type)
+
+
+@pytest.mark.contract
+@pytest.mark.asyncio
+async def test_get_ontology_vocabulary_audience_type_n3(http_service: Any) -> None:
+    """Should return 200 OK and a n3 document."""
+    content_type = "text/n3"
+    ontology_type = ONTOLOGY_TYPE
+    ontology = ONTOLOGY
+    url = f"{http_service}/{ontology_type}/{ontology}"
+    headers = {hdrs.ACCEPT: content_type}
+    async with ClientSession() as session:
+        async with session.get(url, headers=headers) as response:
+            document = await response.text()
+
+    assert response.status == 200
+    assert f"{content_type}; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
+
+    assert Graph().parse(data=document, format=content_type)
+
+
+# ---------------------------------------------------------------------- #
 
 
 # Utils for displaying debug information
