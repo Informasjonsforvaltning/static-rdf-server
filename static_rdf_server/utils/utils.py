@@ -1,5 +1,5 @@
 """Module for util functions."""
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from content_negotiation import (
     decide_content_type,
@@ -10,7 +10,11 @@ from content_negotiation import (
 from rdflib import Graph
 from rdflib.exceptions import ParserError
 
-EXTENSION_MAP: Dict[str, str] = {"text/html": "html", "text/turtle": "ttl"}
+from static_rdf_server.utils.config import (
+    EXTENSION_MAP,
+    SUPPORTED_CONTENT_TYPES,
+    SUPPORTED_EXTENSIONS,
+)
 
 
 class ContentTypeNotSupportedException(Exception):
@@ -56,49 +60,25 @@ async def decide_content_and_extension(
     return (content_type, content_language, extension)
 
 
-async def valid_file_content(file_extension: str, file_content: Any) -> None:
+async def valid_file_content(
+    content_type: str, rdf_content_types: List[str], file_content: Any
+) -> None:
     """Return True if file-content is valid."""
-    if "ttl" == file_extension:
+    if content_type in rdf_content_types:
         try:
-            Graph().parse(data=file_content)
+            Graph().parse(data=file_content, format=content_type)
         except (ParserError, SyntaxError, UnicodeDecodeError) as e:
             raise NotValidFileContentException(str(e)) from e
 
 
 async def valid_file_extension(file_extension: str) -> bool:
     """Return True if valid file-extension."""
-    return file_extension.lower() in [
-        "ttl",
-        "html",
-        "png",
-        "pdf",
-        "eap",
-        "xsd",
-        "jpg",
-        "docx",
-        "eapx",
-        "epub",
-        "uxf",
-    ]
+    return file_extension.lower() in SUPPORTED_EXTENSIONS
 
 
 async def valid_content_type(content_type: str) -> bool:
     """Return True if supported content-type."""
-    if content_type.lower() in [
-        "text/turtle",
-        "text/html",
-        "application/pdf",
-        "image/png",
-        "application/octet-stream",
-        "text/xml",
-        "image/jpeg",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/epub+zip",
-        "text/xml",
-    ]:
-        return True
-
-    return False
+    return content_type.lower() in SUPPORTED_CONTENT_TYPES
 
 
 async def rewrite_links(

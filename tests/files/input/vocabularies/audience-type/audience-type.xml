@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:adms="http://www.w3.org/ns/adms#" xmlns:dct="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:schema="http://schema.org/" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:uneskos="http://purl.org/umu/uneskos#" xmlns:xkos="http://rdf-vocabulary.ddialliance.org/xkos#">
+    <rdf:Description rdf:about="https://data.norge.no/vocabulary/audience-type#public">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept" />
+        <skos:prefLabel xml:lang="en">public</skos:prefLabel>
+        <skos:prefLabel xml:lang="nb">allmennheten</skos:prefLabel>
+        <skos:inScheme rdf:resource="https://data.norge.no/vocabulary/audience-type" />
+        <skos:topConceptOf rdf:resource="https://data.norge.no/vocabulary/audience-type" />
+        <xkos:coreContentNote xml:lang="nb">målgruppe som det ikke forutsettes noe forkunnskap av, i det/de aktuelle fagområdet/fagområdene for begrepet</xkos:coreContentNote>
+        <xkos:coreContentNote xml:lang="en">audience of whom there is no prior knowledge required in the subject field(s) of the concept</xkos:coreContentNote>
+        <dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://data.norge.no/vocabulary/audience-type#public</dct:identifier>
+        <adms:status rdf:resource="http://publications.europa.eu/resource/authority/concept-status/CURRENT" />
+    </rdf:Description>
+    <rdf:Description rdf:about="https://data.norge.no/vocabulary/audience-type">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme" />
+        <xkos:numberOfLevels rdf:datatype="http://www.w3.org/2001/XMLSchema#positiveInteger">1</xkos:numberOfLevels>
+        <dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://data.norge.no/vocabulary/audience-type</dct:identifier>
+        <dct:title xml:lang="en">Audience type</dct:title>
+        <dct:title xml:lang="nb">Målgruppetype</dct:title>
+        <dct:publisher rdf:resource="https://organization-catalog.fellesdatakatalog.digdir.no/organizations/991825827" />
+        <dct:description xml:lang="en">Controlled vocabulary with predefined audience types, primarily meant to be used in connection with descriptions of concepts in accordance with SKOS-AP-NO-Begrep and TBX-AP-NO.</dct:description>
+        <dct:description xml:lang="nb">Kontrollert vokabular med predefinerte målgruppetyper, primært ment for å brukes i forbindelse med begrepsbeskrivelser  i henhold til SKOS-AP-NO-Begrep og TBX-AP-NO.</dct:description>
+        <schema:validFrom rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2922-09-01</schema:validFrom>
+        <uneskos:contains rdf:resource="https://data.norge.no/vocabulary/audience-type#public" />
+        <uneskos:contains rdf:resource="https://data.norge.no/vocabulary/audience-type#specialist" />
+        <dct:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-09-02</dct:modified>
+        <dct:language rdf:resource="http://publications.europa.eu/resource/authority/language/ENG" />
+        <dct:language rdf:resource="http://publications.europa.eu/resource/authority/language/NOB" />
+        <dct:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2022-09-01</dct:issued>
+        <adms:status rdf:resource="http://publications.europa.eu/resource/authority/dataset-status/COMPLETED" />
+    </rdf:Description>
+    <rdf:Description rdf:about="https://data.norge.no/vocabulary/audience-type#specialist">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept" />
+        <skos:prefLabel xml:lang="en">specialist</skos:prefLabel>
+        <skos:prefLabel xml:lang="nb">spesialist</skos:prefLabel>
+        <skos:inScheme rdf:resource="https://data.norge.no/vocabulary/audience-type" />
+        <xkos:coreContentNote xml:lang="nb">målgruppe som det forutsettes et visst kunnskapsnivå i det/de aktuelle fagområdet/fagområdene for begrepet</xkos:coreContentNote>
+        <xkos:coreContentNote xml:lang="en">audience of whom there is certain level of knowledge required in the subject field(s) of the concept</xkos:coreContentNote>
+        <dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://data.norge.no/vocabulary/audience-type#specialist</dct:identifier>
+        <adms:status rdf:resource="http://publications.europa.eu/resource/authority/concept-status/CURRENT" />
+    </rdf:Description>
+</rdf:RDF>

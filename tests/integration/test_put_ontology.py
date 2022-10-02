@@ -250,6 +250,84 @@ async def test_put_ontology_when_ontology_does_exist(client: Any, fs: Any) -> No
 
 
 @pytest.mark.integration
+async def test_put_ontology_xml_when_ontology_does_exist(client: Any, fs: Any) -> None:
+    """Should return status 204 No Content."""
+    data_root = "/srv/www/static-rdf-server/data"
+    ontology_type = "examples"
+    ontology = "hello-world"
+
+    fs.create_dir(f"{data_root}/{ontology_type}/{ontology}")
+
+    rdf_file = f'/srv/www/static-rdf-server"/{ontology_type}/{ontology}/{ontology}.xml'
+    rdf_content = """<?xml version="1.0" encoding="utf-8"?>
+    <rdf:RDF
+        xmlns:ns1="http://example.com/"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <rdf:Description rdf:about="http://example.com/drewp">
+            <ns1:says>Hello World</ns1:says>
+        </rdf:Description>
+    </rdf:RDF>
+    """
+    fs.create_file(
+        rdf_file,
+        contents=rdf_content,
+    )
+    html_file = (
+        f'/srv/www/static-rdf-server"/{ontology_type}/{ontology}/{ontology}.html'
+    )
+    html_content = """
+    <!doctype html>
+    <html lang="en">
+    <title>Hello world</title>
+
+    <body>
+        <p>Hello, world!</p>
+        <p>This greeting was last updated 2022-02-08 14:49:40.</p>
+        <img src="images/hello-world.png" alt="Hello World">
+        <a href="files/hello-world-en.pdf" download="hello-world-en.pdf">Download the pdf</a>
+    """
+
+    fs.create_file(
+        html_file,
+        contents=html_content,
+    )
+
+    with open(rdf_file, "rb") as file:
+        ontology_rdf = file.read()
+    with open(html_file, "rb") as file:
+        ontology_html = file.read()
+
+    with MultipartWriter("mixed") as mpwriter:
+        # add the RDF-representation
+        p = mpwriter.append(ontology_rdf)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-rdf-file",
+            filename=f"{ontology}.xml",
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "application/rdf+xml"
+        # add the HTML-representation
+        p = mpwriter.append(ontology_html)
+        p.set_content_disposition(
+            "attachment",
+            name="ontology-html-file",
+            filename=f"{ontology}.html",
+        )
+        p.headers[hdrs.CONTENT_TYPE] = "text/html"
+        p.headers[hdrs.CONTENT_LANGUAGE] = "en"
+
+    headers = {
+        "X-API-KEY": os.getenv("API_KEY", None),
+    }
+    response = await client.put(
+        f"/{ontology_type}/{ontology}", headers=headers, data=mpwriter
+    )
+
+    assert response.status == 204
+    assert hdrs.LOCATION != response.headers
+
+
+@pytest.mark.integration
 async def test_put_ontology_when_ontology_type_does_not_exist(
     client: Any, fs: Any
 ) -> None:
@@ -426,7 +504,7 @@ async def test_put_ontology_not_valid_extension(client: Any, fs: Any) -> None:
     )
     assert response.status == 400
     body = await response.json()
-    assert f"Not supported file-extension {not_valid_extension}." == body["detail"]
+    assert f"Not supported file-extension '{not_valid_extension}'." == body["detail"]
 
 
 @pytest.mark.integration
