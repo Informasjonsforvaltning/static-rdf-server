@@ -99,7 +99,7 @@ async def test_get_ontology_type_with_no_ontologies(client: Any, fs: Any) -> Non
         "<title>Is_Empty</title>"
         "<body>"
         "<h2>Is_Empty</h2>"
-        "<ul></ul>"
+        "<table></table>"
         "</body>"
     )
 

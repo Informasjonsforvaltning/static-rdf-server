@@ -109,12 +109,12 @@ async def generate_html_document(
     html_statements.append(f"<title>{ontology_type.title()}</title>")
     html_statements.append("<body>")
     html_statements.append(f"<h2>{ontology_type.title()}</h2>")
-    html_statements.append("<ul>")
+    html_statements.append("<table>")
     for (ontology, last_modified) in ontologies:
         html_statements.append(
-            f'<li><a href="{ontology_type}/{ontology}">{ontology}</a>\tlast updated: {last_modified}</li>'
+            f'<tr><td><a href="{ontology_type}/{ontology}">{ontology}</a></td><td>last updated: {last_modified}</td></tr>'  # noqa: B950
         )
-    html_statements.append("</ul>")
+    html_statements.append("</table>")
     html_statements.append("</body>")
 
     # Concatenates all the statments into a string:
