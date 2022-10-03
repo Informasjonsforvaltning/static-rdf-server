@@ -7,8 +7,8 @@ describe('ontologies vocabularies, language = default', () => {
     cy.get('html[lang="nb"]').should('exist');
     cy.title().should('eq', 'Vocabularies')
     cy.get("h2").first().contains("Vocabularies");
-    cy.get('ul').children().should('have.length', 1);
-    cy.get('ul li:first').should('to.contain', 'audience-type')
+    cy.get('table').children().should('have.length', 1);
+    cy.get('table tr:first').should('to.contain', 'audience-type')
   })
 })
 
@@ -22,8 +22,8 @@ describe('ontologies vocabularies, language = en-GB', () => {
     cy.get('html[lang="en"]').should('exist');
     cy.title().should('eq', 'Vocabularies')
     cy.get("h2").first().contains("Vocabularies");
-    cy.get('ul').children().should('have.length', 1);
-    cy.get('ul li:first').should('to.contain', 'audience-type')
+    cy.get('table').children().should('have.length', 1);
+    cy.get('table tr:first').should('to.contain', 'audience-type')
   })
 })
 
@@ -38,8 +38,8 @@ describe('ontologies vocabularies, language = nb-NO', () => {
     cy.get('html[lang="nb"]').should('exist');
     cy.title().should('eq', 'Vocabularies')
     cy.get("h2").first().contains("Vocabularies");
-    cy.get('ul').children().should('have.length', 1);
-    cy.get('ul li:first').should('to.contain', 'audience-type')
+    cy.get('table').children().should('have.length', 1);
+    cy.get('table tr:first').should('to.contain', 'audience-type')
   })
 })
 
@@ -54,7 +54,7 @@ describe('ontologies vocabularies, language = nn-NO', () => {
     cy.get('html[lang="nn"]').should('exist');
     cy.title().should('eq', 'Vocabularies')
     cy.get("h2").first().contains("Vocabularies");
-    cy.get('ul').children().should('have.length', 1);
-    cy.get('ul li:first').should('to.contain', 'audience-type')
+    cy.get('table').children().should('have.length', 1);
+    cy.get('table tr:first').should('to.contain', 'audience-type')
   })
 })
