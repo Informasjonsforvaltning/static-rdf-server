@@ -35,7 +35,7 @@ watchgod = ">=0.2"
 
 [[package]]
 name = "aiohttp-middlewares"
-version = "2.1.1"
+version = "2.2.0"
 description = "Collection of useful middlewares for aiohttp applications."
 category = "main"
 optional = false
@@ -1240,7 +1240,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.11"
-content-hash = "607874001e0215e6785c256c1e250b66d3915324e6488bcdaa88006f98b72332"
+content-hash = "33fe4e4f7e067edb8d0607e4899de253ae87d5487c53dfac89fd74f08e4c5343"
 
 [metadata.files]
 aiohttp = [
@@ -1337,8 +1337,8 @@ aiohttp-devtools = [
     {file = "aiohttp_devtools-1.0.post0-py37.py38.py39.py310-none-any.whl", hash = "sha256:1847ce92e6e8ca1ed5dc603864f4faecdfa40b6b5aeb5193f05cafd28d3ce3e3"},
 ]
 aiohttp-middlewares = [
-    {file = "aiohttp_middlewares-2.1.1-py3-none-any.whl", hash = "sha256:30237ca9669517a5b5bec0a65c2558edf65fa22f402db5cc8e0f8f4aef0e1040"},
-    {file = "aiohttp_middlewares-2.1.1.tar.gz", hash = "sha256:dbd20765d55ba670ef6e1c176b9cca27a4caa9e332e24a8a1febbe8b5edb13d2"},
+    {file = "aiohttp_middlewares-2.2.0-py3-none-any.whl", hash = "sha256:f4b87665667d4d3e818d70495e832e368f11a1fdc9c2fd8157a7d9e5d5147c5d"},
+    {file = "aiohttp_middlewares-2.2.0.tar.gz", hash = "sha256:3967b2a0d17a2c094681e7c2f246977a365479a2820e48f8a01136c910f4aa93"},
 ]
 aiosignal = [
     {file = "aiosignal-1.2.0-py3-none-any.whl", hash = "sha256:26e62109036cd181df6e6ad646f91f0dcfd05fe16d0cb924138ff2ab75d64e3a"},
