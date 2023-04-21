@@ -1,13 +1,13 @@
 @prefix adms: <http://www.w3.org/ns/adms#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix schema: <http://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema1: <http://schema.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix uneskos: <http://purl.org/umu/uneskos#> .
 @prefix xkos: <http://rdf-vocabulary.ddialliance.org/xkos#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://data.norge.no/vocabulary/audience-type#public> a skos:Concept ;
-    dct:identifier "https://data.norge.no/vocabulary/audience-type#public"^^xsd:anyURI ;
+    dcterms:identifier "https://data.norge.no/vocabulary/audience-type#public"^^xsd:anyURI ;
     xkos:coreContentNote "audience of whom there is no prior knowledge required in the subject field(s) of the concept"@en,
         "målgruppe som det ikke forutsettes noe forkunnskap av, i det/de aktuelle fagområdet/fagområdene for begrepet"@nb ;
     skos:inScheme <https://data.norge.no/vocabulary/audience-type> ;
@@ -17,7 +17,7 @@
     adms:status <http://publications.europa.eu/resource/authority/concept-status/CURRENT> .
 
 <https://data.norge.no/vocabulary/audience-type#specialist> a skos:Concept ;
-    dct:identifier "https://data.norge.no/vocabulary/audience-type#specialist"^^xsd:anyURI ;
+    dcterms:identifier "https://data.norge.no/vocabulary/audience-type#specialist"^^xsd:anyURI ;
     xkos:coreContentNote "audience of whom there is certain level of knowledge required in the subject field(s) of the concept"@en,
         "målgruppe som det forutsettes et visst kunnskapsnivå i det/de aktuelle fagområdet/fagområdene for begrepet"@nb ;
     skos:inScheme <https://data.norge.no/vocabulary/audience-type> ;
@@ -26,19 +26,19 @@
     adms:status <http://publications.europa.eu/resource/authority/concept-status/CURRENT> .
 
 <https://data.norge.no/vocabulary/audience-type> a skos:ConceptScheme ;
-    dct:description "Controlled vocabulary with predefined audience types, primarily meant to be used in connection with descriptions of concepts in accordance with SKOS-AP-NO-Begrep and TBX-AP-NO."@en,
+    dcterms:description "Controlled vocabulary with predefined audience types, primarily meant to be used in connection with descriptions of concepts in accordance with SKOS-AP-NO-Begrep and TBX-AP-NO."@en,
         "Kontrollert vokabular med predefinerte målgruppetyper, primært ment for å brukes i forbindelse med begrepsbeskrivelser  i henhold til SKOS-AP-NO-Begrep og TBX-AP-NO."@nb ;
-    dct:identifier "https://data.norge.no/vocabulary/audience-type"^^xsd:anyURI ;
-    dct:issued "2022-09-01"^^xsd:date ;
-    dct:language <http://publications.europa.eu/resource/authority/language/ENG>,
+    dcterms:identifier "https://data.norge.no/vocabulary/audience-type"^^xsd:anyURI ;
+    dcterms:issued "2022-09-01"^^xsd:date ;
+    dcterms:language <http://publications.europa.eu/resource/authority/language/ENG>,
         <http://publications.europa.eu/resource/authority/language/NOB> ;
-    dct:modified "2022-09-02"^^xsd:date ;
-    dct:publisher <https://organization-catalog.fellesdatakatalog.digdir.no/organizations/991825827> ;
-    dct:title "Audience type"@en,
+    dcterms:modified "2022-09-02"^^xsd:date ;
+    dcterms:publisher <https://organization-catalog.fellesdatakatalog.digdir.no/organizations/991825827> ;
+    dcterms:title "Audience type"@en,
         "Målgruppetype"@nb ;
     uneskos:contains <https://data.norge.no/vocabulary/audience-type#public>,
         <https://data.norge.no/vocabulary/audience-type#specialist> ;
     xkos:numberOfLevels "1"^^xsd:positiveInteger ;
-    schema:validFrom "2922-09-01"^^xsd:date ;
+    schema1:validFrom "2922-09-01"^^xsd:date ;
     adms:status <http://publications.europa.eu/resource/authority/dataset-status/COMPLETED> .
 
