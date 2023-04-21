@@ -80,7 +80,6 @@ async def test_get_ontology_specification_with_version_html(http_service: Any) -
 
     url = f"{http_service}/{ontology_type}/{ontology}/{version}"
     async with ClientSession() as session:
-
         # Get html-representations: nb
         headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
         async with session.get(url, headers=headers) as response:
