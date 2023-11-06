@@ -93,7 +93,7 @@ def contract_tests(session: Session) -> None:
 def e2e_tests(session: Session) -> None:
     """Run the e2e test suite."""
     session.install(".")
-    session.install("docker-compose")
+    session.install("pytest-docker")
     session.run(
         "docker-compose",
         "up",
