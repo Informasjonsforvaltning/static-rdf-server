@@ -180,7 +180,7 @@ def mypy(session: Session) -> None:
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]
-    session.install("pytype<=2023.12.7")
+    session.install("pytype<=2023.11.29")
     session.run("pytype", *args)
 
 
