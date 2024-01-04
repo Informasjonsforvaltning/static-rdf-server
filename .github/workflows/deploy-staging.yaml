@@ -1,0 +1,81 @@
+name: Deploy to staging
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  run-coverage:
+    name: Coverage
+    uses: Informasjonsforvaltning/workflows/.github/workflows/coverage-nox.yaml@main
+    with:
+      python_version: "3.10"
+      python_architecture: x64
+      sessions: integration_tests
+      nox_env: True
+      nox_env_name: API_KEY
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NOX_ENV_VALUE: ${{ secrets.TEST_API_KEY }}
+
+  build-and-deploy-server:
+    name: Build and deploy server to staging
+    if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
+    with:
+      app_name: static-rdf-server
+      python_version: "3.10"
+      python_architecture: x64
+      node_version: 16
+      environment: staging
+      cluster: digdir-fdk-dev
+      nox_image: True
+      nox_env: 1
+      nox_env_1_name: API_KEY
+      run_safety: true
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
+      DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      NOX_ENV_1_VALUE: ${{ secrets.TEST_API_KEY }}
+
+  build-and-deploy-nginx:
+    name: Build and deploy nginx to staging
+    if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
+    with:
+      app_name: static-rdf-nginx
+      python_version: "3.10"
+      python_architecture: x64
+      environment: staging
+      cluster: digdir-fdk-dev
+      nox_env: 1
+      nox_env_1_name: API_KEY
+      nox_cmd: "-s contract_tests"
+      dockerfile_context: ./nginx/
+      dockerfile: ./nginx/Dockerfile
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
+      DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      NOX_ENV_1_VALUE: ${{ secrets.TEST_API_KEY }}
+
+  dependabot-build-server:
+    name: Build server image on PR from dependabot
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build.yaml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependabot-build-nginx:
+    name: Build nginx image on PR from dependabot
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build.yaml@main
+    with:
+      dockerfile: ./nginx/Dockerfile
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
