@@ -2,10 +2,11 @@
 select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
 docstring-convention = google
 max-complexity = 10
-ignore = ANN101,ANN401,B009,E501,W503,B907
+ignore = ANN101,ANN401,B009,E501,W503,B907,B026
 max-line-length = 100
 per-file-ignores = 
     __init__.py: F401
     tests/*: S101,E800
+    static_rdf_server/gunicorn_config.py: B026
 import-order-style = google
 application-import-names = static_rdf_server, tests
