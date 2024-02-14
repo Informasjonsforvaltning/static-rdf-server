@@ -19,6 +19,7 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NOX_ENV_VALUE: ${{ secrets.TEST_API_KEY }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   build-and-deploy-server:
     name: Build and deploy server to staging
@@ -77,5 +78,6 @@ jobs:
     uses: Informasjonsforvaltning/workflows/.github/workflows/build.yaml@main
     with:
       dockerfile: ./nginx/Dockerfile
+      dockerfile_context: ./nginx/
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
