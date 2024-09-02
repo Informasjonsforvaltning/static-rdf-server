@@ -1,4 +1,5 @@
 """Module for slash route."""
+
 import os
 from typing import Any, Dict, List
 

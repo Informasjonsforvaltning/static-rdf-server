@@ -1,4 +1,5 @@
 """Test cases for the server module."""
+
 import os
 from typing import Any
 
@@ -56,3 +57,14 @@ async def test_delete_ontology_no_api_key(client: Any, fs: Any) -> None:
     response = await client.delete("/ontology-type-1/ontology-1")
 
     assert response.status == 403
+
+
+@pytest.mark.integration
+async def test_delete_ontology_not_valid(client: Any, fs: Any) -> None:
+    """Should return status 400."""
+    headers = {
+        "X-API-KEY": os.getenv("API_KEY", None),
+    }
+    response = await client.delete("/ontology-type-1/%00", headers=headers)
+
+    assert response.status == 400

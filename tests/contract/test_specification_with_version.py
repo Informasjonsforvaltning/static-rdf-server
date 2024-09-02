@@ -1,4 +1,5 @@
 """Contract test cases the upload ontology."""
+
 import os
 from typing import Any
 

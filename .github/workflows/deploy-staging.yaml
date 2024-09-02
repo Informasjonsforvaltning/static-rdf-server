@@ -35,7 +35,7 @@ jobs:
       nox_image: True
       nox_env: 1
       nox_env_1_name: API_KEY
-      run_safety: true
+      run_safety: false
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}

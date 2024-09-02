@@ -1,4 +1,5 @@
 """Test cases for the server module."""
+
 from typing import Any
 
 from aiohttp import hdrs
@@ -540,6 +541,17 @@ async def test_get_html_no_agreeable_language_en(client: Any, fs: Any) -> None:
     document = await response.text()
     assert '<html lang="nb">' in document
     assert document == contents_nb
+
+
+@pytest.mark.integration
+async def test_get_ontology_with_invalid_path(client: Any, fs: Any) -> None:
+    """Should return status 400 when path is invalid."""
+    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "da"}
+    response = await client.get("/ontology-type-1/%00", headers=headers)
+
+    assert response.status == 400
+    body = await response.json()
+    assert "Ontology path is not valid." == body["detail"]
 
 
 # ---------------------------------------------------------------------- #

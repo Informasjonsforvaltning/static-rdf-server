@@ -1,4 +1,5 @@
 """Module for ping route."""
+
 from aiohttp import web
 
 

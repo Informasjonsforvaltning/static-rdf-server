@@ -1,4 +1,6 @@
 """Module for util functions."""
+
+import logging
 from typing import Any, List, Optional, Tuple
 
 from content_negotiation import (
@@ -7,6 +9,7 @@ from content_negotiation import (
     NoAgreeableContentTypeError,
     NoAgreeableLanguageError,
 )
+from pathvalidate import Platform, validate_filename, validate_filepath, ValidationError
 from rdflib import Graph
 from rdflib.exceptions import ParserError
 
@@ -101,3 +104,23 @@ async def rewrite_links(
         else html_str.replace("files", f"{ontology}/files")
     )
     return html_str.encode("utf-8")
+
+
+def valid_filepath(path: str) -> bool:
+    """Validate filepath."""
+    try:
+        validate_filepath(path, Platform.LINUX)
+        return True
+    except ValidationError as e:
+        logging.debug(f"Filepath {path} is invalid: {e}")
+        return False
+
+
+def valid_filename(filename: str) -> bool:
+    """Validate filename."""
+    try:
+        validate_filename(filename, Platform.LINUX)
+        return True
+    except ValidationError as e:
+        logging.debug(f"Filename {filename} is invalid: {e}")
+        return False

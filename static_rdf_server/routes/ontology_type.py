@@ -1,4 +1,5 @@
 """Module for ontology route."""
+
 import datetime
 import logging
 import os
@@ -13,6 +14,8 @@ from content_negotiation import (
     NoAgreeableLanguageError,
 )
 from multidict import MultiDict
+
+from static_rdf_server.utils import valid_filepath
 
 SUPPORTED_CONTENT_TYPES = ["text/html"]
 SUPPORTED_LANGUAGES = ["nb", "nn", "en"]
@@ -30,15 +33,15 @@ async def put_ontology_type(request: web.Request) -> web.Response:
 
     # Decide status_code:
     destination = os.path.join(data_root, ontology_type)
+
+    if not valid_filepath(f"{destination}"):
+        raise web.HTTPBadRequest(reason="Ontology-type path is not valid.") from None
+
     if os.path.exists(destination):
         status_code = 204
     else:
-        status_code = 201
-
-    # Create destination folders:
-    destination = os.path.join(data_root, ontology_type)
-    if not os.path.exists(destination):
         os.makedirs(destination)
+        status_code = 201
 
     headers = MultiDict([(hdrs.LOCATION, f"{ontology_type}")])
     return web.Response(status=status_code, headers=headers)
@@ -48,6 +51,7 @@ async def get_ontology_type(request: web.Request) -> web.Response:
     """Should generate and return a list of ontologies in give ontology-type as a html-document."""
     data_root = request.app["DATA_ROOT"]
     ontology_type = request.match_info["ontology_type"]
+
     try:
         content_type = decide_content_type(
             request.headers.getall(hdrs.ACCEPT, []),
@@ -64,8 +68,10 @@ async def get_ontology_type(request: web.Request) -> web.Response:
     except NoAgreeableLanguageError as e:
         raise web.HTTPNotAcceptable() from e
 
-    data_root = request.app["DATA_ROOT"]
     ontology_type_path = os.path.join(data_root, ontology_type)
+
+    if not valid_filepath(f"{ontology_type_path}"):
+        raise web.HTTPBadRequest(reason="Ontology-type path is not valid.") from None
 
     # If the ontology-type does not exist, return 404:
     if not os.path.exists(ontology_type_path):

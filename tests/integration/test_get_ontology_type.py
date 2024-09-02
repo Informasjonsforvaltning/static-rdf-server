@@ -1,4 +1,5 @@
 """Test cases for the server module."""
+
 from textwrap import dedent
 from typing import Any
 
@@ -143,3 +144,14 @@ async def test_get_ontology_type_ask_for_turtle(client: Any, fs: Any) -> None:
     response = await client.get(f"/{ontology_type}", headers=headers)
 
     assert response.status == 406
+
+
+@pytest.mark.integration
+async def test_get_ontology_type_with_invalid_path(client: Any, fs: Any) -> None:
+    """Should return status 400 when path is invalid."""
+    headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
+    response = await client.get("/%00", headers=headers)
+
+    assert response.status == 400
+    body = await response.json()
+    assert "Ontology-type path is not valid." == body["detail"]
