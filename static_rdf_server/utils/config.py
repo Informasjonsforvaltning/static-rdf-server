@@ -1,4 +1,5 @@
 """Module for various configs."""
+
 from typing import Dict, List
 
 RDF_CONTENT_TYPES: List[str] = [

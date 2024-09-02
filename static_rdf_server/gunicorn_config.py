@@ -1,4 +1,5 @@
 """Gunicorn module for hosting an aiohttp server."""
+
 import logging
 import multiprocessing
 from os import environ as env

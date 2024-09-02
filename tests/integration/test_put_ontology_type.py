@@ -1,4 +1,5 @@
 """Test cases for the server module."""
+
 import os
 from typing import Any
 
@@ -51,3 +52,19 @@ async def test_put_ontology_type_no_api_key(client: Any, fs: Any) -> None:
     response = await client.put(f"/{ontology_type}")
 
     assert response.status == 403
+
+
+@pytest.mark.integration
+async def test_put_ontology_type_invalid_type(client: Any, fs: Any) -> None:
+    """Should return status 400 Bad Request."""
+    headers = {
+        "X-API-KEY": os.getenv("API_KEY", None),
+    }
+
+    response = await client.put("/%00", headers=headers)
+
+    assert response.status == 400
+
+    response = await client.put("/\0.txt", headers=headers)
+
+    assert response.status == 400

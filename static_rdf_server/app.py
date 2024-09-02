@@ -1,4 +1,5 @@
 """Module for server."""
+
 import logging
 import os
 from typing import Any

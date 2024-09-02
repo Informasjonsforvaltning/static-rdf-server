@@ -1,4 +1,5 @@
 """Module for ready route."""
+
 import os
 
 from aiohttp import web

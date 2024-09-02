@@ -1,4 +1,5 @@
 """Unit test cases for the event-service module."""
+
 from typing import Dict, List
 
 import pytest

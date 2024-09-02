@@ -1,4 +1,5 @@
 """Nox sessions."""
+
 import sys
 
 import nox
@@ -94,17 +95,18 @@ def e2e_tests(session: Session) -> None:
     """Run the e2e test suite."""
     session.install(".")
     session.install("pytest-docker")
-    session.run(
-        "docker-compose",
-        "up",
-        "--detach",
-        "--build",
-        env={
-            "LOGGING_LEVEL": "DEBUG",
-            "API_KEY": "supersecretapikey",
-        },
-    )
     try:
+        session.run(
+            "docker",
+            "compose",
+            "up",
+            "--detach",
+            "--build",
+            env={
+                "LOGGING_LEVEL": "DEBUG",
+                "API_KEY": "supersecretapikey",
+            },
+        )
         with session.chdir("e2e"):
             # Runs in "e2e"
             session.run(
@@ -120,7 +122,8 @@ def e2e_tests(session: Session) -> None:
             )
     finally:
         session.run(
-            "docker-compose",
+            "docker",
+            "compose",
             "down",
         )
 
@@ -150,14 +153,6 @@ def lint(session: Session) -> None:
         "flake8-eradicate",
     )
     session.run("flake8", *args)
-
-
-@session(python="3.10")
-def safety(session: Session) -> None:
-    """Scan dependencies for insecure packages."""
-    requirements = session.poetry.export_requirements()
-    session.install("safety")
-    session.run("safety", "check", f"--file={requirements}", "--output", "text")
 
 
 @session(python="3.10")

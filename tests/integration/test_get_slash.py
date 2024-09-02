@@ -1,4 +1,5 @@
 """Test cases for the server module."""
+
 from typing import Any
 
 from aiohttp import hdrs
