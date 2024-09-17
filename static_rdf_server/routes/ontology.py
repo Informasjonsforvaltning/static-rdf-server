@@ -104,7 +104,19 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             # Validate filename extension:
             extension: str = ""
             if part.filename:
-                if not valid_filename(f"{part.filename}"):
+                file_subfolder_path = part.filename.split("/")
+                if len(file_subfolder_path) > 2:
+                    raise web.HTTPBadRequest(
+                        reason="Ontology file path includes more than one subfolder."
+                    ) from None
+                elif len(file_subfolder_path) == 2 and not valid_filepath(
+                    file_subfolder_path[0]
+                ):
+                    raise web.HTTPBadRequest(
+                        reason="Ontology subfolder is not valid."
+                    ) from None
+
+                if not valid_filename(f"{file_subfolder_path[-1]}"):
                     raise web.HTTPBadRequest(
                         reason="Ontology file is not valid."
                     ) from None
