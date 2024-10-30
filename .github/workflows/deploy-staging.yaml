@@ -69,8 +69,6 @@ jobs:
     name: Build server image on PR from dependabot
     if: ${{ github.actor == 'dependabot[bot]' }}
     uses: Informasjonsforvaltning/workflows/.github/workflows/build.yaml@main
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   dependabot-build-nginx:
     name: Build nginx image on PR from dependabot
@@ -79,5 +77,3 @@ jobs:
     with:
       dockerfile: ./nginx/Dockerfile
       dockerfile_context: ./nginx/
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
