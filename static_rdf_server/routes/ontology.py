@@ -144,7 +144,7 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
                 )
             except NotValidFileContentException as e:
                 raise web.HTTPBadRequest(
-                    reason=f'Ontology file "{part.filename}" has not valid content: {str(e)}.'
+                    reason=f'Ontology file "{part.filename}" has not valid content.'
                 ) from e
 
             # For html-files We need to rewrite links to sub-folders:
