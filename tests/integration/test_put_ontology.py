@@ -464,7 +464,7 @@ async def test_put_ontology_file_not_readable(client: Any, fs: Any) -> None:
 
     assert response.status == 400
     body = await response.json()
-    assert f'Ontology file "{ontology}.ttl" has not valid content:' in body["detail"]
+    assert f'Ontology file "{ontology}.ttl" has not valid content' in body["detail"]
 
 
 @pytest.mark.integration
@@ -544,7 +544,7 @@ async def test_put_ontology_rdf_file_not_parsable(client: Any, fs: Any) -> None:
 
     assert response.status == 400
     body = await response.json()
-    assert f'Ontology file "{ontology}.ttl" has not valid content:' in body["detail"]
+    assert f'Ontology file "{ontology}.ttl" has not valid content' in body["detail"]
 
 
 @pytest.mark.integration
