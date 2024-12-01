@@ -6,7 +6,7 @@ name = "static-rdf-server"
 version = "0.1.0"
 
 [tool.poetry.dependencies]
-aiohttp = "^3.9.3"
+aiohttp = "^3.11.8"
 aiohttp-middlewares = "^2.2.0"
 certifi = "^2024.8.30"
 content-negotiation = "^1.1.2"
