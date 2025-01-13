@@ -52,6 +52,7 @@ jobs:
       python_architecture: x64
       environment: staging
       cluster: digdir-fdk-dev
+      monorepo_app: True
       nox_env: 1
       nox_env_1_name: API_KEY
       nox_cmd: "-s contract_tests"

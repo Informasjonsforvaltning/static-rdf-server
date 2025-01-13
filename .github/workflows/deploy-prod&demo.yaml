@@ -51,6 +51,7 @@ jobs:
       python_architecture: x64
       environment: prod
       cluster: digdir-fdk-prod
+      monorepo_app: True
       nox_env: 1
       nox_env_1_name: API_KEY
       nox_cmd: "-s contract_tests"
@@ -70,6 +71,7 @@ jobs:
       app_name: static-rdf-nginx
       environment: demo
       cluster: digdir-fdk-dev
+      monorepo_app: True
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
       DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
