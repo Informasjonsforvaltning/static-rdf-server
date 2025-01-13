@@ -17,7 +17,6 @@ jobs:
       node_version: 16
       environment: prod
       cluster: digdir-fdk-prod
-      monorepo_app: True
       nox_image: True
       nox_env: 1
       nox_env_1_name: API_KEY
@@ -38,7 +37,6 @@ jobs:
       app_name: static-rdf-server
       environment: demo
       cluster: digdir-fdk-dev
-      monorepo_app: True
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
