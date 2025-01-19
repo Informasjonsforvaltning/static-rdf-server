@@ -1204,13 +1204,13 @@ files = [
 
 [[package]]
 name = "pathvalidate"
-version = "3.2.2"
+version = "3.2.3"
 description = "pathvalidate is a Python library to sanitize/validate a string such as filenames/file-paths/etc."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pathvalidate-3.2.2-py3-none-any.whl", hash = "sha256:088dd9cae734389b5949c6f42a159dcd8a2d66a2358dfce8e1252712ada66191"},
-    {file = "pathvalidate-3.2.2.tar.gz", hash = "sha256:ff7383cafc499fa574b46c1c00cf2965a53aedc92dd2d62729993cdba308319b"},
+    {file = "pathvalidate-3.2.3-py3-none-any.whl", hash = "sha256:5eaf0562e345d4b6d0c0239d0f690c3bd84d2a9a3c4c73b99ea667401b27bee1"},
+    {file = "pathvalidate-3.2.3.tar.gz", hash = "sha256:59b5b9278e30382d6d213497623043ebe63f10e29055be4419a9c04c721739cb"},
 ]
 
 [package.extras]
@@ -2057,4 +2057,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "b4b0ce004bbdc109980b6e34e74a0d078569fa7ac47682415e1f978b0684b640"
+content-hash = "3fdd54a7321715a6f02368e841990e1015cbc0311ce43cf9d7bcecf3fdd5e0da"

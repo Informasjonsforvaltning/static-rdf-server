@@ -16,7 +16,7 @@ python = ">=3.9,<3.11"
 python-dotenv = "^1.0.0"
 python-json-logger = "^3.2.1"
 rdflib = "^7.1.1"
-pathvalidate = "^3.2.1"
+pathvalidate = "^3.2.3"
 
 [tool.poetry.group.dev.dependencies]
 aiohttp-devtools = "^1.1"
