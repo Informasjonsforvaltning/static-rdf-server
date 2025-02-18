@@ -29,9 +29,18 @@ DEFAULT_LANGUAGE = "nb"
 
 async def create_app() -> web.Application:
     """Create an web application."""
+    origins = os.getenv("CORS_ORIGIN_PATTERNS", "*").split(",")
+    origins = [origin.strip() for origin in origins]
+    allow_all = "*" in origins
+
     app = web.Application(
         middlewares=[
-            cors_middleware(allow_all=True),
+            cors_middleware(
+                allow_all=allow_all,
+                origins=None if allow_all else origins,
+                allow_methods=["GET", "PUT", "DELETE"],
+                allow_headers=["*"],
+            ),
             error_middleware(),  # default error handler for whole application
         ],
     )
