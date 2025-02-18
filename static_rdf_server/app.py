@@ -38,7 +38,7 @@ async def create_app() -> web.Application:
             cors_middleware(
                 allow_all=allow_all,
                 origins=None if allow_all else origins,
-                allow_methods=["GET", "PUT", "DELETE"],
+                allow_methods=["GET"],
                 allow_headers=["*"],
             ),
             error_middleware(),  # default error handler for whole application
