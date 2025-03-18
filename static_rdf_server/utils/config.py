@@ -15,6 +15,7 @@ STATIC_CONTENT_TYPES: List[str] = [
     "application/octet-stream",
     "image/jpeg",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/epub+zip",
     "text/xml",
 ]
@@ -40,6 +41,7 @@ SUPPORTED_EXTENSIONS: List[str] = [
     "epub",
     "uxf",
     "xml",
+    "xlsx"
 ]
 
 EXTENSION_MAP: Dict[str, str] = {
