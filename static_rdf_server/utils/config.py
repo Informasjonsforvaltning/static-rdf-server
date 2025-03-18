@@ -41,7 +41,7 @@ SUPPORTED_EXTENSIONS: List[str] = [
     "epub",
     "uxf",
     "xml",
-    "xlsx"
+    "xlsx",
 ]
 
 EXTENSION_MAP: Dict[str, str] = {
