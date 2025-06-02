@@ -1,10 +1,9 @@
-FROM python:3.10-alpine
+FROM ghcr.io/astral-sh/uv:python3.10-alpine
 
 RUN mkdir -p /app
 WORKDIR /app
 
 RUN pip install --upgrade pip
-RUN pip install "uv==0.7.9"
 COPY pyproject.toml /app/
 
 # uv Project initialization:
