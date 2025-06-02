@@ -4,12 +4,12 @@ RUN mkdir -p /app
 WORKDIR /app
 
 RUN pip install --upgrade pip
-RUN pip install "poetry==1.8.5"
-COPY poetry.lock pyproject.toml /app/
+RUN pip install "uv==0.7.9"
+COPY pyproject.toml /app/
 
-# Project initialization:
-RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-interaction --no-ansi
+# uv Project initialization:
+RUN uv pip compile pyproject.toml -o dep-list && \
+    uv pip install --system -r dep-list
 
 ADD static_rdf_server /app/static_rdf_server
 
