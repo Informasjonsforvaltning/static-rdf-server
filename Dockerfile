@@ -7,8 +7,8 @@ RUN pip install --upgrade pip
 COPY pyproject.toml /app/
 
 # uv Project initialization:
-RUN uv pip compile pyproject.toml -o dep-list && \
-    uv pip install --system -r dep-list
+RUN uv pip compile pyproject.toml -o uv.lock && \
+    uv pip install --system -r uv.lock
 
 ADD static_rdf_server /app/static_rdf_server
 
