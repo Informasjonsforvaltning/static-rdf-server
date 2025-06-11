@@ -10,6 +10,23 @@ ONTOLOGY_TYPE = "specifications"
 ONTOLOGY = "dcat-ap-no"
 
 
+def get_api_headers() -> dict[str, str]:
+    """Returns a headers dictionary with the API key if set in the environment.
+
+    This helper function reads the API_KEY environment variable and, if present,
+    adds it to the headers as "X-API-KEY". This is used to authenticate requests
+    to the API in contract tests.
+
+    Returns:
+        dict[str, str]: Headers dictionary for authenticated requests.
+    """
+    api_key = os.getenv("API_KEY")
+    headers = {}
+    if api_key:
+        headers["X-API-KEY"] = api_key
+    return headers
+
+
 @pytest.mark.contract
 @pytest.mark.asyncio
 async def test_put_specification(http_service: Any) -> None:
@@ -77,9 +94,7 @@ async def test_put_specification(http_service: Any) -> None:
     ontology_type = ONTOLOGY_TYPE
     ontology = ONTOLOGY
     url = f"{http_service}/{ontology_type}/{ontology}"
-    headers = {
-        "X-API-KEY": os.getenv("API_KEY", None),
-    }
+    headers = get_api_headers()
     async with ClientSession() as session:
         async with session.put(url, headers=headers, data=mpwriter) as response:
             if response.status != 204:

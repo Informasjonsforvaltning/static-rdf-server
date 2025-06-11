@@ -13,7 +13,6 @@ nox.options.stop_on_first_error = False
 nox.options.sessions = (
     "lint",
     "mypy",
-    "pytype",
     "unit_tests",
     "integration_tests",
     "contract_tests",
@@ -21,7 +20,7 @@ nox.options.sessions = (
 )
 
 
-@session(python="3.10")
+@session(python="3.12")
 def unit_tests(session: Session) -> None:
     """Run the unit test suite."""
     args = session.posargs
@@ -39,7 +38,7 @@ def unit_tests(session: Session) -> None:
     )
 
 
-@session(python="3.10")
+@session(python="3.12")
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
@@ -67,7 +66,7 @@ def integration_tests(session: Session) -> None:
     )
 
 
-@session(python="3.10")
+@session(python="3.12")
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -90,7 +89,7 @@ def contract_tests(session: Session) -> None:
     )
 
 
-@session(python="3.10")
+@session(python="3.12")
 def e2e_tests(session: Session) -> None:
     """Run the e2e test suite."""
     session.install(".")
@@ -128,7 +127,7 @@ def e2e_tests(session: Session) -> None:
         )
 
 
-@session(python="3.10")
+@session(python="3.12")
 def black(session: Session) -> None:
     """Run black code formatter."""
     args = session.posargs or locations
@@ -136,7 +135,7 @@ def black(session: Session) -> None:
     session.run("black", *args)
 
 
-@session(python="3.10")
+@session(python="3.12")
 def lint(session: Session) -> None:
     """Lint using flake8."""
     args = session.posargs or locations
@@ -155,7 +154,7 @@ def lint(session: Session) -> None:
     session.run("flake8", *args)
 
 
-@session(python="3.10")
+@session(python="3.12")
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or [
@@ -171,15 +170,7 @@ def mypy(session: Session) -> None:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.10")
-def pytype(session: Session) -> None:
-    """Run the static type checker using pytype."""
-    args = session.posargs or ["--disable=import-error", *locations]
-    session.install("pytype<=2023.11.29")
-    session.run("pytype", *args)
-
-
-@session(python="3.10")
+@session(python="3.12")
 def coverage(session: Session) -> None:
     """Upload coverage data."""
     session.install("coverage[toml]")
