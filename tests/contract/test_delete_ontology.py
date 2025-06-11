@@ -7,6 +7,23 @@ from aiohttp import ClientSession, hdrs, MultipartWriter
 import pytest
 
 
+def get_api_headers() -> dict[str, str]:
+    """Returns a headers dictionary with the API key if set in the environment.
+
+    This helper function reads the API_KEY environment variable and, if present,
+    adds it to the headers as "X-API-KEY". This is used to authenticate requests
+    to the API in contract tests.
+
+    Returns:
+        dict[str, str]: Headers dictionary for authenticated requests.
+    """
+    api_key = os.getenv("API_KEY")
+    headers = {}
+    if api_key:
+        headers["X-API-KEY"] = api_key
+    return headers
+
+
 @pytest.fixture
 @pytest.mark.asyncio
 async def ontology_to_be_deleted(http_service: Any) -> None:
@@ -61,9 +78,7 @@ async def ontology_to_be_deleted(http_service: Any) -> None:
     ontology = "hello-world-to-be-deleted"
 
     url = f"{http_service}/{ontology_type}/{ontology}"
-    headers = {
-        "X-API-KEY": os.getenv("API_KEY", None),
-    }
+    headers = get_api_headers()
     async with ClientSession() as session:
         async with session.put(url, headers=headers, data=mpwriter) as response:
             pass
@@ -78,10 +93,8 @@ async def test_delete_ontology(http_service: Any, ontology_to_be_deleted: Any) -
     ontology_type = "contract-test"
     ontology = "hello-world-to-be-deleted"
 
-    headers = {
-        "X-API-KEY": os.getenv("API_KEY", None),
-    }
     url = f"{http_service}/{ontology_type}/{ontology}"
+    headers = get_api_headers()
     async with ClientSession() as session:
         async with session.delete(url, headers=headers) as response:
             if response.status != 204:

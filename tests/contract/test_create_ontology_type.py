@@ -7,6 +7,23 @@ from aiohttp import ClientSession, hdrs
 import pytest
 
 
+def get_api_headers() -> dict[str, str]:
+    """Returns a headers dictionary with the API key if set in the environment.
+
+    This helper function reads the API_KEY environment variable and, if present,
+    adds it to the headers as "X-API-KEY". This is used to authenticate requests
+    to the API in contract tests.
+
+    Returns:
+        dict[str, str]: Headers dictionary for authenticated requests.
+    """
+    api_key = os.getenv("API_KEY")
+    headers = {}
+    if api_key:
+        headers["X-API-KEY"] = api_key
+    return headers
+
+
 @pytest.mark.contract
 @pytest.mark.asyncio
 async def test_create_ontology_type_specifications(http_service: Any) -> None:
@@ -14,9 +31,7 @@ async def test_create_ontology_type_specifications(http_service: Any) -> None:
     ontology_type = "specifications"
 
     url = f"{http_service}/{ontology_type}"
-    headers = {
-        "X-API-KEY": os.getenv("API_KEY", None),
-    }
+    headers = get_api_headers()
     async with ClientSession() as session:
         async with session.put(url, headers=headers) as response:
             if response.status != 204:
@@ -28,14 +43,14 @@ async def test_create_ontology_type_specifications(http_service: Any) -> None:
         assert f"{ontology_type}" == response.headers[hdrs.LOCATION]
 
         # Get turtle-representation:
-        headers = {hdrs.ACCEPT: "text/turtle"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(url, headers={hdrs.ACCEPT: "text/turtle"}) as response:
             body = await response.text()
         assert response.status == 406
 
         # Get html-representations: en
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
+        ) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -43,8 +58,9 @@ async def test_create_ontology_type_specifications(http_service: Any) -> None:
         assert body
 
         # Get html-representations: nb
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
+        ) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -52,8 +68,9 @@ async def test_create_ontology_type_specifications(http_service: Any) -> None:
         assert body
 
         # Get html-representations: nn
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
+        ) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -61,14 +78,14 @@ async def test_create_ontology_type_specifications(http_service: Any) -> None:
         assert body
 
         # Get html-representations: unknown language
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
+        ) as response:
             body = await response.text()
         assert response.status == 406
 
         # Get html-representations: default language
-        headers = {hdrs.ACCEPT: "text/html"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(url, headers={hdrs.ACCEPT: "text/html"}) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -83,9 +100,7 @@ async def test_create_ontology_type_vocabularies(http_service: Any) -> None:
     ontology_type = "vocabularies"
 
     url = f"{http_service}/{ontology_type}"
-    headers = {
-        "X-API-KEY": os.getenv("API_KEY", None),
-    }
+    headers = get_api_headers()
     async with ClientSession() as session:
         async with session.put(url, headers=headers) as response:
             if response.status != 204:
@@ -97,14 +112,14 @@ async def test_create_ontology_type_vocabularies(http_service: Any) -> None:
         assert f"{ontology_type}" == response.headers[hdrs.LOCATION]
 
         # Get turtle-representation:
-        headers = {hdrs.ACCEPT: "text/turtle"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(url, headers={hdrs.ACCEPT: "text/turtle"}) as response:
             body = await response.text()
         assert response.status == 406
 
         # Get html-representations: en
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "en"}
+        ) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -112,8 +127,9 @@ async def test_create_ontology_type_vocabularies(http_service: Any) -> None:
         assert body
 
         # Get html-representations: nb
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nb"}
+        ) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -121,8 +137,9 @@ async def test_create_ontology_type_vocabularies(http_service: Any) -> None:
         assert body
 
         # Get html-representations: nn
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "nn"}
+        ) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
@@ -130,14 +147,14 @@ async def test_create_ontology_type_vocabularies(http_service: Any) -> None:
         assert body
 
         # Get html-representations: unknown language
-        headers = {hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(
+            url, headers={hdrs.ACCEPT: "text/html", hdrs.ACCEPT_LANGUAGE: "xx"}
+        ) as response:
             body = await response.text()
         assert response.status == 406
 
         # Get html-representations: default language
-        headers = {hdrs.ACCEPT: "text/html"}
-        async with session.get(url, headers=headers) as response:
+        async with session.get(url, headers={hdrs.ACCEPT: "text/html"}) as response:
             body = await response.text()
         assert response.status == 200
         assert "text/html; charset=utf-8" == response.headers[hdrs.CONTENT_TYPE]
