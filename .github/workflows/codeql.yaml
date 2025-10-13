@@ -1,4 +1,6 @@
 name: Code scanning (CodeQL)
+permissions:
+  contents: read
 
 on:
   pull_request:
