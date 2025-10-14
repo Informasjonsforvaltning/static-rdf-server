@@ -6,41 +6,41 @@ name = "static-rdf-server"
 version = "0.1.0"
 
 [tool.poetry.dependencies]
-aiohttp = "^3.11.12"
+aiohttp = "^3.13.0"
 aiohttp-middlewares = "^2.4.0"
-certifi = "^2025.1.31"
+certifi = "^2025.10.5"
 content-negotiation = "^1.1.2"
 gunicorn = "^23.0.0"
-multidict = "^6.1.0"
+multidict = "^6.7.0"
 python = ">=3.12,<3.13"
-python-dotenv = "^1.0.0"
-python-json-logger = "^3.2.1"
-rdflib = "^7.1.4"
-pathvalidate = "^3.2.3"
+python-dotenv = "^1.1.1"
+python-json-logger = "^4.0.0"
+rdflib = "^7.2.1"
+pathvalidate = "^3.3.1"
 
 [tool.poetry.group.dev.dependencies]
 aiohttp-devtools = "^1.1"
-black = "^25.1.0"
-flake8 = "^7.1.2"
-flake8-annotations = "^3.1.1"
+black = "^25.9.0"
+flake8 = "^7.3.0"
+flake8-annotations = "^3.2.0"
 flake8-bandit = "^4.1.1"
-flake8-black = "^0.3.6"
+flake8-black = "^0.4.0"
 flake8-bugbear = "^24.12.12"
 flake8-docstrings = "^1.7.0"
 flake8-eradicate = "^1.5.0"
-flake8-import-order = "^0.18.2"
-mypy = "^1.15.0"
-nox = "^2025.2.9"
+flake8-import-order = "^0.19.2"
+mypy = "^1.18.2"
+nox = "^2025.5.1"
 nox-poetry = "^1.2.0"
-pep8-naming = "^0.14.1"
-pyfakefs = "^5.8.0"
-pytest = "^8.3.4"
+pep8-naming = "^0.15.1"
+pyfakefs = "^5.10.0"
+pytest = "^8.4.2"
 pytest-aiohttp = "^1.1.0"
-pytest-asyncio = "^0.25.3"
-pytest-cov = "^6.0.0"
-pytest-docker = "^3.2.0"
-requests = "^2.32.3"
-types-requests = "^2.32.0.20250328"
+pytest-asyncio = "^1.2.0"
+pytest-cov = "^7.0.0"
+pytest-docker = "^3.2.3"
+requests = "^2.32.5"
+types-requests = "^2.32.4.20250913"
 
 [tool.mypy]
 pretty = true
@@ -60,7 +60,7 @@ module = [
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.8.5"]
 
 [tool.coverage.paths]
 source = ["static_rdf_server", "*/site-packages"]

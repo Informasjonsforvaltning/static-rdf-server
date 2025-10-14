@@ -1,4 +1,6 @@
 name: Audit
+permissions:
+  contents: read
 on: push
 jobs:
   audit:

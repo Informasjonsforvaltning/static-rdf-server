@@ -46,6 +46,7 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   build-and-deploy-nginx:
+    needs: build-and-deploy-server
     name: Deploy to nginx prod on merge to main branch
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
     with:

@@ -133,3 +133,6 @@ dmypy.json
 .idea
 
 .DS_Store
+
+# AI
+*CLAUDE.md
