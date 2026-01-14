@@ -1,9 +1,11 @@
 name: Code scanning (CodeQL)
+
 permissions:
   actions: read
   contents: read
   security-events: write
   pull-requests: write
+
 on:
   pull_request:
     types: [ready_for_review, opened, reopened, synchronize]
