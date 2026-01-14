@@ -24,8 +24,7 @@ def get_api_headers() -> dict[str, str]:
     return headers
 
 
-@pytest.fixture
-@pytest.mark.asyncio
+@pytest.fixture(scope="function")
 async def ontology_to_be_deleted(http_service: Any) -> None:
     """Fixture to create the test-case."""
     # ARRANGE:
