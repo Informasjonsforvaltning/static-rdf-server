@@ -33,7 +33,7 @@ jobs:
       app_name: static-rdf-server
       python_version: "3.12"
       python_architecture: x64
-      node_version: 16
+      node_version: 22
       environment: staging
       cluster: digdir-fdk-dev
       nox_image: True
