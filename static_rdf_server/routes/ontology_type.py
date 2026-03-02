@@ -130,8 +130,7 @@ async def generate_html_document(
 async def generate_html_not_found() -> str:
     """Simple not found page."""
     # Generate and return the html:
-    return dedent(
-        """
+    return dedent("""
         <!doctype html>
         <html lang="en">
             <head>
@@ -141,5 +140,4 @@ async def generate_html_not_found() -> str:
                 <p>The page you are looking for does not exist.</p>
             </body>
         </html>
-    """
-    ).strip()
+    """).strip()

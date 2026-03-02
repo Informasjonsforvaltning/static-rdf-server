@@ -64,8 +64,7 @@ async def test_get_ontology_type_unsupported_language(client: Any, fs: Any) -> N
 @pytest.mark.integration
 async def test_get_ontology_type_that_does_not_exist(client: Any, fs: Any) -> None:
     """Should return status 404 OK and html document."""
-    expected = dedent(
-        """
+    expected = dedent("""
         <!doctype html>
         <html lang="en">
             <head>
@@ -75,8 +74,7 @@ async def test_get_ontology_type_that_does_not_exist(client: Any, fs: Any) -> No
                 <p>The page you are looking for does not exist.</p>
             </body>
         </html>
-    """
-    ).strip()
+    """).strip()
 
     ontology_type = "does_not_exist"
 
