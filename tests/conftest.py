@@ -2,6 +2,7 @@
 
 import os
 from os import environ as env
+import shutil
 import time
 from typing import Any
 
@@ -15,6 +16,15 @@ from static_rdf_server import create_app
 
 load_dotenv()
 HOST_PORT = int(env.get("HOST_PORT", "8080"))
+
+
+@pytest.fixture(scope="session")
+def docker_compose_command() -> str:
+    """Use full path to docker so tests work with podman (docker→podman) or when PATH is minimal."""
+    docker_path = shutil.which("docker")
+    if docker_path:
+        return f"{docker_path} compose"
+    return "docker-compose"
 
 
 @pytest.fixture
