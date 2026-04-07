@@ -6,12 +6,12 @@ RUN mkdir -p /app
 WORKDIR /app
 
 RUN pip install --upgrade pip==26.0.1
-RUN pip install "poetry==1.8.5"
+RUN pip install "poetry==2.3.3"
 COPY poetry.lock pyproject.toml /app/
 
 # Project initialization:
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-interaction --no-ansi
+  && poetry install --only main --no-root --no-interaction --no-ansi
 
 ADD static_rdf_server /app/static_rdf_server
 
