@@ -138,7 +138,7 @@ async def put_ontology(request: web.Request) -> web.Response:  # noqa: C901
             # Check the content of the file:
             ontology_file_decoded: bytes
             try:
-                ontology_file_decoded = await part.decode(ontology_file)
+                ontology_file_decoded = part.decode(ontology_file)
                 await valid_file_content(
                     content_type, RDF_CONTENT_TYPES, ontology_file_decoded
                 )
