@@ -5,8 +5,8 @@ RUN apk update && apk upgrade --no-cache
 RUN mkdir -p /app
 WORKDIR /app
 
-RUN pip install --upgrade pip==26.0.1
-RUN pip install "poetry==2.3.3"
+RUN pip install --upgrade pip==26.1.1
+RUN pip install "poetry==2.4.1"
 COPY poetry.lock pyproject.toml /app/
 
 # Project initialization:
