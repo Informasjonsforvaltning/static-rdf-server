@@ -21,6 +21,8 @@ from .routes import (
 
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
+# Should be in sync with client_max_body_size in nginx.conf:
+CLIENT_MAX_SIZE = int(os.getenv("CLIENT_MAX_SIZE", 4 * 1024**3))
 SERVER_ROOT = os.getenv("SERVER_ROOT", "/srv/www/static-rdf-server")
 DATA_ROOT = os.getenv("DATA_ROOT", os.path.join(SERVER_ROOT, "data"))
 STATIC_ROOT = os.getenv("STATIC_ROOT", os.path.join(SERVER_ROOT, "static"))
@@ -34,6 +36,7 @@ async def create_app() -> web.Application:
     allow_all = "*" in origins
 
     app = web.Application(
+        client_max_size=CLIENT_MAX_SIZE,
         middlewares=[
             cors_middleware(
                 allow_all=allow_all,
