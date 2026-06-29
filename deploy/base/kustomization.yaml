@@ -10,5 +10,5 @@ images:
     newName: ghcr.io/informasjonsforvaltning/static-rdf-server
     newTag: $(GIT_COMMIT_SHA)
   - name: static-rdf-nginx
-    newName: ghcr.io/informasjonsforvaltning/static-rdf-nginx
+    newName: ghcr.io/informasjonsforvaltning/static-rdf-server/static-rdf-nginx
     newTag: $(GIT_COMMIT_SHA)

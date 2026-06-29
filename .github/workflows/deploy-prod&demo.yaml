@@ -26,6 +26,7 @@ jobs:
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: static-rdf-nginx
+      monorepo_app: true
       environment: prod
       gh_environment: prod
       dockerfile: Dockerfile
