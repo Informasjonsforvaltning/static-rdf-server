@@ -1,0 +1,35 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: fdk-dev-staging-static-rdf-server
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 9G
+  accessModes:
+    - ReadWriteOnce
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: topology.kubernetes.io/zone
+              operator: In
+              values:
+                - europe-north1-a
+  gcePersistentDisk:
+    pdName: fdk-dev-staging-static-rdf-server
+    fsType: ext4
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: static-rdf-server-claim0
+spec:
+  storageClassName: ""
+  volumeName: fdk-dev-staging-static-rdf-server
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 9G

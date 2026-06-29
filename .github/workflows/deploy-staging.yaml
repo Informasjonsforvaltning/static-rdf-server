@@ -25,49 +25,44 @@ jobs:
       NOX_ENV_VALUE: ${{ secrets.TEST_API_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  build-and-deploy-server:
-    name: Build and deploy server to staging
+  build-server:
+    name: Build server image
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
-    uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: static-rdf-server
-      python_version: "3.12"
-      python_architecture: x64
-      node_version: 22
       environment: staging
-      cluster: digdir-fdk-dev
-      nox_image: True
-      nox_env: 1
-      nox_env_1_name: API_KEY
-      run_safety: false
+      gh_environment: staging
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      NOX_ENV_1_VALUE: ${{ secrets.TEST_API_KEY }}
 
-  build-and-deploy-nginx:
-    needs: build-and-deploy-server
-    name: Build and deploy nginx to staging
+  build-nginx:
+    name: Build nginx image
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
-    uses: Informasjonsforvaltning/workflows/.github/workflows/build-deploy-nox.yaml@main
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: static-rdf-nginx
-      python_version: "3.12"
-      python_architecture: x64
       environment: staging
+      gh_environment: staging
+      dockerfile: Dockerfile
+      build_context: ./nginx/
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    name: Deploy to staging environment
+    if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
+    needs: [build-server, build-nginx]
+    uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
+    with:
+      app_name: static-rdf-server
+      environment: staging
+      gh_environment: staging
       cluster: digdir-fdk-dev
-      monorepo_app: True
-      nox_env: 1
-      nox_env_1_name: API_KEY
-      nox_cmd: "-s contract_tests"
-      dockerfile_context: ./nginx/
-      dockerfile: ./nginx/Dockerfile
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      NOX_ENV_1_VALUE: ${{ secrets.TEST_API_KEY }}
 
   dependabot-build-server:
     name: Build server image on PR from dependabot
@@ -79,5 +74,5 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' }}
     uses: Informasjonsforvaltning/workflows/.github/workflows/build.yaml@main
     with:
-      dockerfile: ./nginx/Dockerfile
-      dockerfile_context: ./nginx/
+      dockerfile: Dockerfile
+      build_context: ./nginx/

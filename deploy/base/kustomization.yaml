@@ -1,0 +1,14 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment-static-rdf.yaml
+  - service-static-rdf-server.yaml
+  - service-static-rdf-nginx.yaml
+images:
+  - name: static-rdf-server
+    newName: ghcr.io/informasjonsforvaltning/static-rdf-server
+    newTag: $(GIT_COMMIT_SHA)
+  - name: static-rdf-nginx
+    newName: ghcr.io/informasjonsforvaltning/static-rdf-nginx
+    newTag: $(GIT_COMMIT_SHA)
