@@ -4,6 +4,7 @@
   },
   "overrides": {
     "form-data": "^4.0.6",
-    "systeminformation": "^5.33.16"
+    "systeminformation": "^5.33.16",
+    "qs": "^6.16.1"
   }
 }
