@@ -14,3 +14,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+
+  - package-ecosystem: "docker"
+    directory: "/nginx"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
